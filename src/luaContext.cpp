@@ -1,0 +1,134 @@
+#include "luaContext.h"
+#include "luaRegisterer.h"
+
+#include <boost/filesystem.hpp>
+#include <vector>
+
+using std::vector;
+using std::string;
+using std::cerr;
+
+using LuaIntf::LuaException;
+
+using namespace boost::filesystem;
+
+namespace FalconEye {
+
+    LuaContext::LuaContext()
+        : luaContext()
+    {
+        LUARegisterer::RegisterClasses(luaContext);
+        //loadScripts();
+    }
+
+    LuaContext::LuaContext(const char* config_file)
+        : luaContext()
+    {
+        LUARegisterer::RegisterClasses(luaContext);
+        //loadScripts();
+        configure(config_file);
+    }
+
+    LuaContext::~LuaContext()
+    {}
+
+    int LuaContext::configure(const char * config_file)
+    {
+        if (!runFile(config_file))
+        {
+            vector<string> filesToRun;
+            LuaRef programConfigRef = getProgramConfigRef();
+            if (programConfigRef.isTable())
+            {
+                LuaRef scriptsTable = programConfigRef["scripts"];
+                if (scriptsTable.isTable())
+                {
+                    for (auto&& e : scriptsTable)
+                    {
+                        filesToRun.push_back(e.value<string>());
+                    }
+                }
+            }
+            else
+            {
+                cerr << "configuration file does not define variable \"programConfig\" or it is not a table\n";
+            }
+            runFiles(filesToRun);
+        }
+        else
+        {
+            cerr << "configuration file could not be read\n";
+        }
+    }
+
+    int LuaContext::runFile(const char* file)
+    {
+        try
+        {
+            luaContext.doFile(file);
+        }
+        catch (const LuaException& e)
+        {
+            cerr << "Error while trying to run file " << file << '\n' << e.what() << '\n';
+            return 1;
+        }
+        return 0;
+    }
+
+    int LuaContext::runFilesInDirectory(const char* dir)
+    {
+        path scriptsDirectory(dir);
+        if (exists(scriptsDirectory))
+        {
+            if (is_directory(scriptsDirectory))
+            {
+                vector<string> filesToExecute;
+                for (auto&& it = scriptsDirectory.begin(); it != scriptsDirectory.end(); ++it)
+                {
+                    path current = *it;
+                    if (is_regular_file(current))
+                    {
+                        if (current.extension().string() == ".lua")
+                        {
+                            filesToExecute.push_back(current.string());
+                        }
+                    }
+                }
+                return runFiles(filesToExecute);
+            }
+        }
+
+        return -1;
+    }
+
+    int LuaContext::runMainScript()
+    {
+        int ret = 0;
+        LuaRef programConfigRef = getProgramConfigRef();
+        if (programConfigRef.isTable())
+        {
+            string f = programConfigRef.get<string>("mainScript");
+            return runFile(f.c_str());
+        }
+        else
+        {
+            cerr << "configuration file does not define variable \"programConfig\" or it is not a table\n";
+        }
+    }
+
+    LuaRef LuaContext::getProgramConfigRef()
+    {
+        return LuaRef(luaContext.state(), "programConfig");
+    }
+
+    int LuaContext::runFiles(const vector<string>& files)
+    {
+        int ret = 0;
+        for (auto&& f : files)
+        {
+            ret += runFile(f.c_str());
+        }
+        return ret;
+    }
+
+} // end namespace FalconEye
