@@ -39,7 +39,6 @@ namespace FalconEye {
         size_t getAntiAliasing() const { return anti_aliasing; }
 
         static SceneRenderOption& defaultRenderOptions;
-        static SceneRenderOption& getDefaultOptions();
 
         LUA_BEGIN_BIND_METHODS(SceneRenderOption)
             LUA_BIND_CONSTRUCTOR_SP(SceneRenderOption, size_t, size_t, size_t, size_t, size_t)
