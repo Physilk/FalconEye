@@ -4,6 +4,8 @@
 #include <boost/filesystem.hpp>
 #include <vector>
 
+#include "sceneRenderer.h"
+
 using std::vector;
 using std::string;
 using std::cerr;
@@ -36,29 +38,16 @@ namespace FalconEye {
     {
         if (!runFile(config_file))
         {
-            vector<string> filesToRun;
-            LuaRef programConfigRef = getProgramConfigRef();
-            if (programConfigRef.isTable())
-            {
-                LuaRef scriptsTable = programConfigRef["scripts"];
-                if (scriptsTable.isTable())
-                {
-                    for (auto&& e : scriptsTable)
-                    {
-                        filesToRun.push_back(e.value<string>());
-                    }
-                }
-            }
-            else
-            {
-                cerr << "configuration file does not define variable \"programConfig\" or it is not a table\n";
-            }
-            runFiles(filesToRun);
+            config_RunScripts();
+            config_SetDefaultRenderOption();
         }
         else
         {
             cerr << "configuration file could not be read\n";
+            return 1;
         }
+
+        return 0;
     }
 
     int LuaContext::runFile(const char* file)
@@ -113,12 +102,68 @@ namespace FalconEye {
         else
         {
             cerr << "configuration file does not define variable \"programConfig\" or it is not a table\n";
+            ret = 1;
         }
+        return ret;
     }
 
     LuaRef LuaContext::getProgramConfigRef()
     {
         return LuaRef(luaContext.state(), "programConfig");
+    }
+
+    int LuaContext::config_RunScripts()
+    {
+        int ret = 0;
+        vector<string> filesToRun;
+        LuaRef programConfigRef = getProgramConfigRef();
+        if (programConfigRef.isTable())
+        {
+            LuaRef scriptsTable = programConfigRef["scripts"];
+            if (scriptsTable.isTable())
+            {
+                filesToRun = scriptsTable.toValue<vector<string>>();
+            }
+            else
+            {
+                ret = 1;
+            }
+        }
+        else
+        {
+            cerr << "configuration file does not define variable \"programConfig\" or it is not a table\n";
+            ret = 1;
+        }
+
+        if (runFiles(filesToRun) != 0)
+        {
+            cerr << "not all scripts of programConfig could be run\n";
+            return 1;
+        }
+        return ret;
+    }
+
+    int LuaContext::config_SetDefaultRenderOption()
+    {
+        LuaRef programConfigRef = getProgramConfigRef();
+        if (programConfigRef.isTable())
+        {
+            try
+            {
+                SceneRenderOption ro = programConfigRef.get<SceneRenderOption>("defaultRenderOptions");
+                SceneRenderOption::defaultRenderOptions = ro;
+            }
+            catch (const LuaException& e)
+            {
+                cerr << "Error while trying to get value for \"defaultRenderOptions\" : " << e.what() << '\n';
+                return 1;
+            }
+        }
+        else
+        {
+            cerr << "configuration file does not define variable \"defaultRenderOptions\" or it is not a table\n";
+        }
+        return 0;
     }
 
     int LuaContext::runFiles(const vector<string>& files)

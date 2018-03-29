@@ -35,6 +35,9 @@ namespace FalconEye {
     private:
         LuaIntf::LuaContext luaContext;
         LuaRef getProgramConfigRef();
+
+        int config_RunScripts();
+        int config_SetDefaultRenderOption();
     };
 
 } // end namespace FalconEye

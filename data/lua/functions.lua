@@ -31,3 +31,8 @@ end
 function createPointLigth(position, range, color)
     return PointLight(position, range, color, AttenuationParameters(1, 4.5/range, 75/(range*range)))
 end
+
+function pauseUntilEnter()
+    io.output():write("Press ENTER to continue")
+    io.input():read(1)
+end

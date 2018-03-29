@@ -1,4 +1,4 @@
-#include "resourceManager.hpp"
+#include "resourceManager.h"
 
 #ifdef GK_MACOS
 #include <SDL2_image/SDL_image.h>

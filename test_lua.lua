@@ -73,5 +73,7 @@ for i=0, 20, 1 do
     --mySphere.center = p
     --local radius = mySphere.radius + 0.2;
     --mySphere.radius = radius
-	myScene:renderScene("output/plan/test_plan".. i .. ".png", sceneRenderOption)
+	myScene:renderScene("output/plan/test_plan".. i .. ".png")
 end
+
+pauseUntilEnter()

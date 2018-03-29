@@ -12,10 +12,13 @@ namespace FalconEye {
     // -----------------------------------------------------------------------
     // -----------------------------------------------------------------------
 
-    void Scene::renderScene(const char *filename, const SceneRenderOption &opt) {
+    void Scene::renderScene(const char *filename, SceneRenderOption_ptr ro) {
 
         if (bboxBinTree == nullptr)
             preProcess();
+        
+        const SceneRenderOption* ro_to_use = (ro.get() == nullptr) ? &SceneRenderOption::defaultRenderOptions : ro.get();
+        const SceneRenderOption& opt = *ro_to_use;
 
         const int width = opt.getWidth();
         const int height = opt.getHeight();

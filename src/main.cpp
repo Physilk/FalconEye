@@ -10,7 +10,6 @@ int main( int argc, char **argv )
 
     FalconEye::LuaContext luaContext("data/lua/config.lua");
     luaContext.runMainScript();
-    system("pause");
     
     return 0;
 }
