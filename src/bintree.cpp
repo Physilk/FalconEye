@@ -26,22 +26,12 @@ namespace FalconEye {
 
         BBox bbox_d(min_bis, bbox.max);
         BBox bbox_g(bbox.min, max_bis);
-        /*
-        std::cout << "current bbox:\n" << bbox <<"\n";
-        std::cout << "bbox_d bbox:\n" << bbox_d <<"\n";
-        std::cout << "bbox_g bbox:\n" << bbox_g <<"\n";
-        std::cout << "cutting on axis:" << axis << "\n";
-        */
+
         Point max_d = bbox.min;
         Point min_g = bbox.max;
         Point min_d = bbox.max;
         Point max_g = bbox.min;
 
-
-        /*
-        Point min_d = min_bis;
-        Point max_g = max_bis;
-        */
         vector<SceneObject *> d_bis, g_bis;
 
         SceneObject * current_object;
@@ -53,22 +43,6 @@ namespace FalconEye {
 
             if (bbox_d.isInside(center)) {
                 d_bis.push_back(current_object);
-                /*
-                switch(axis) {
-                case Axis::X_AXIS:
-                if(min_d.x > min.x)
-                min_d.x = min.x;
-                break;
-                case Axis::Y_AXIS:
-                if(min_d.y > min.y)
-                min_d.y = min.y;
-                break;
-                case Axis::Z_AXIS:
-                if(min_d.z > min.z)
-                min_d.z = min.z;
-                break;
-                }
-                */
 
                 if (min_d.x > min.x)
                     min_d.x = min.x;
@@ -91,25 +65,8 @@ namespace FalconEye {
 
             }
             else {
-                /*if(!bbox_g.isInside(center))
-                std::cout << "this should not happend\n";*/
+                
                 g_bis.push_back(current_object);
-                /*
-                switch(axis) {
-                case Axis::X_AXIS:
-                if(max_g.x < max.x)
-                max_g.x = max.x;
-                break;
-                case Axis::Y_AXIS:
-                if(max_g.y < max.y)
-                max_g.y = max.y;
-                break;
-                case Axis::Z_AXIS:
-                if(max_g.y < max.y)
-                max_g.y = max.y;
-                break;
-                }
-                */
 
                 if (max_g.x < max.x)
                     max_g.x = max.x;
@@ -131,27 +88,15 @@ namespace FalconEye {
 
             }
         }
-        /*
-        bbox_d.min = min_d;
-        //bbox_d.max = max_d;
-        //bbox_g.min = min_g;
-        bbox_g.max = max_g;
-        */
+
         bbox_d.min = min_d;
         bbox_d.max = max_d;
         bbox_g.min = min_g;
         bbox_g.max = max_g;
-        /*
-        std::cout << "bbox_d fin bbox:\n" << bbox_d <<"\n";
-        std::cout << "bbox_g fin bbox:\n" << bbox_g <<"\n";
 
-        std::cout << "d size: " << d_bis.size() << std::endl;
-        std::cout << "g size: " << g_bis.size() << std::endl;
-        */
         d = new BBoxBinTreeNode(bbox_d, d_bis);
         g = new BBoxBinTreeNode(bbox_g, g_bis);
 
-        //objects.clear();
         if (g_bis.size() > 0)
             d->split(max_objects_per_node);
         if (d_bis.size() > 0)
