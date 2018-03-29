@@ -28,15 +28,16 @@ namespace FalconEye {
         SceneObject() : material(nullptr) {}
         // /!\
 
-        virtual bool intersect(const Ray&, Hit&) { return false; } // = 0;
-
         virtual ~SceneObject() = default;
 
-        virtual Point getCenter() { return Point(); }//= 0;
-        virtual Point getMin() { return Point(); }//= 0;
-        virtual Point getMax() { return Point(); }//= 0;
+        virtual bool intersect(const Ray&, Hit&) const { return false; } // = 0;
 
-        virtual size_t getCount() { return 1; }
+
+        virtual Point getCenter() const { return Point(); }//= 0;
+        virtual Point getMin() const { return Point(); }//= 0;
+        virtual Point getMax() const { return Point(); }//= 0;
+
+        virtual size_t getCount() const { return 1; }
 
         void setMaterial(const Material_ptr &m) { material = m; }
         Material_ptr getMaterial() { return material; }
@@ -79,11 +80,11 @@ namespace FalconEye {
 
         virtual ~Plan() = default;
 
-        virtual Point getCenter() override;
-        virtual Point getMin() override;
-        virtual Point getMax() override;
+        virtual Point getCenter() const override;
+        virtual Point getMin() const override;
+        virtual Point getMax() const override;
 
-        virtual bool intersect(const Ray&, Hit&) override;
+        virtual bool intersect(const Ray&, Hit&) const override;
 
         void setOrigin(const Point &p) { origin = p; }
         void setNormal(const Vector &v) { normal = v; }
@@ -118,11 +119,11 @@ namespace FalconEye {
 
         virtual ~Sphere() = default;
 
-        virtual Point getCenter() override;
-        virtual Point getMin() override;
-        virtual Point getMax() override;
+        virtual Point getCenter() const override;
+        virtual Point getMin() const override;
+        virtual Point getMax() const override;
 
-        virtual bool intersect(const Ray&, Hit&) override;
+        virtual bool intersect(const Ray&, Hit&) const override;
 
         void setLocalCenter(const Point &p) { center = p; }
         void setRadius(float r) { radius = r; }
@@ -151,7 +152,7 @@ namespace FalconEye {
 
         virtual ~InverseSphere() = default;
 
-        virtual bool intersect(const Ray&, Hit&) override;
+        virtual bool intersect(const Ray&, Hit&) const override;
 
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(InverseSphere, Sphere)
             LUA_BIND_CONSTRUCTOR_SP(InverseSphere, Point, float, Material_ptr&)
@@ -190,11 +191,11 @@ namespace FalconEye {
 
         virtual ~Triangle() = default;
 
-        virtual Point getCenter() override;
-        virtual Point getMin() override;
-        virtual Point getMax() override;
+        virtual Point getCenter() const override;
+        virtual Point getMin() const override;
+        virtual Point getMax() const override;
 
-        virtual bool intersect(const Ray&, Hit&) override;
+        virtual bool intersect(const Ray&, Hit&) const override;
 
         Point getV0() { return v0; }
         Point getV1() { return v1; }
@@ -247,11 +248,11 @@ namespace FalconEye {
         MeshTriangle(const MeshTriangle&) = default;
 
 
-        virtual bool intersect(const Ray&, Hit&) override;
+        virtual bool intersect(const Ray&, Hit&) const override;
 
-        virtual Point getCenter() override;
-        virtual Point getMin() override;
-        virtual Point getMax() override;
+        virtual Point getCenter() const override;
+        virtual Point getMin() const override;
+        virtual Point getMax() const override;
     };
 
     //forward declaration
@@ -279,13 +280,13 @@ namespace FalconEye {
 
         ~MeshObject();
 
-        virtual Point getCenter() override;
-        virtual Point getMin() override;
-        virtual Point getMax() override;
+        virtual Point getCenter() const override;
+        virtual Point getMin() const override;
+        virtual Point getMax() const override;
 
-        virtual size_t getCount() override { return triangles.size(); }
+        virtual size_t getCount() const override { return triangles.size(); }
 
-        virtual bool intersect(const Ray&, Hit&) override;
+        virtual bool intersect(const Ray&, Hit&) const override;
 
         const Mesh_ptr& getMesh() const { return mesh; }
         Mesh_ptr& getMesh() { return mesh; }

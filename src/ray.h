@@ -25,7 +25,7 @@ namespace FalconEye {
         Point p;
         Vector n;
         float t;
-        SceneObject *p_object;
+        const SceneObject *p_object;
         vec2 uv;
         Color c;
 

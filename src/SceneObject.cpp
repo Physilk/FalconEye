@@ -8,7 +8,7 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    bool Plan::intersect(const Ray& ray, Hit& hit) {
+    bool Plan::intersect(const Ray& ray, Hit& hit) const {
         float div = dot(normal, ray.direction);
         if (std::abs(div) > 0.00001f)
         {
@@ -33,13 +33,13 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point Plan::getCenter() {
+    Point Plan::getCenter() const {
         return origin;
     }
 
     // -----------------------------------------------------
 
-    Point Plan::getMin() {
+    Point Plan::getMin() const {
         return Point(-std::numeric_limits<float>::max(),
             -std::numeric_limits<float>::max(),
             -std::numeric_limits<float>::max()
@@ -48,7 +48,7 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point Plan::getMax() {
+    Point Plan::getMax() const {
         return Point(std::numeric_limits<float>::max(),
             std::numeric_limits<float>::max(),
             std::numeric_limits<float>::max()
@@ -58,7 +58,7 @@ namespace FalconEye {
     // -----------------------------------------------------
     // -----------------------------------------------------
 
-    bool Sphere::intersect(const Ray&ray, Hit &hit) {
+    bool Sphere::intersect(const Ray&ray, Hit &hit) const {
 
         float t0, t1;
         Vector L = ray.origin - center;
@@ -88,14 +88,14 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point Sphere::getCenter() {
+    Point Sphere::getCenter() const {
         //return model(center);
         return center;
     }
 
     // -----------------------------------------------------
 
-    Point Sphere::getMin() {
+    Point Sphere::getMin() const {
         Point ret = getCenter();
         ret.x -= radius;
         ret.y -= radius;
@@ -105,7 +105,7 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point Sphere::getMax() {
+    Point Sphere::getMax() const {
         Point ret = getCenter();
         ret.x += radius;
         ret.y += radius;
@@ -116,7 +116,7 @@ namespace FalconEye {
     // -----------------------------------------------------
     // -----------------------------------------------------
 
-    bool InverseSphere::intersect(const Ray &ray, Hit &hit) {
+    bool InverseSphere::intersect(const Ray &ray, Hit &hit) const {
         bool b = Sphere::intersect(ray, hit);
         if (b)
             hit.n = Vector(0, 0, 0) - hit.n;
@@ -126,7 +126,7 @@ namespace FalconEye {
     // -----------------------------------------------------
     // -----------------------------------------------------
 
-    bool Triangle::intersect(const Ray& ray, Hit& hit) {
+    bool Triangle::intersect(const Ray& ray, Hit& hit) const {
         Vector e1 = v1 - v0;
         Vector e2 = v2 - v0;
         Vector T = ray.origin - v0;
@@ -148,13 +148,13 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point Triangle::getCenter() {
+    Point Triangle::getCenter() const {
         return Point((v0.x + v1.x + v2.x) / 3, (v0.y + v1.y + v2.y) / 3, (v0.z + v1.z + v2.z) / 3);
     }
 
     // -----------------------------------------------------
 
-    Point Triangle::getMin() {
+    Point Triangle::getMin() const {
         Point ret = v0;
         if (ret.x > v1.x)
             ret.x = v1.x;
@@ -174,7 +174,7 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point Triangle::getMax() {
+    Point Triangle::getMax() const {
         Point ret = v0;
         if (ret.x < v1.x)
             ret.x = v1.x;
@@ -249,7 +249,7 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    bool MeshTriangle::intersect(const Ray &ray, Hit &hit) {
+    bool MeshTriangle::intersect(const Ray &ray, Hit &hit) const {
         static const float ESPSILON = 0.0000001f;
 
         const MeshObject::TrianglePointPositions &pos = parent->getPositions(index);
@@ -328,19 +328,19 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    Point MeshTriangle::getCenter() {
+    Point MeshTriangle::getCenter() const {
         return barycentre;
     }
 
     // -----------------------------------------------------
 
-    Point MeshTriangle::getMin() {
+    Point MeshTriangle::getMin() const {
         return min;
     }
 
     // -----------------------------------------------------
 
-    Point MeshTriangle::getMax() {
+    Point MeshTriangle::getMax() const {
         return max;
     }
 
@@ -404,21 +404,21 @@ namespace FalconEye {
 
     // -----------------------------------------------------
 
-    bool MeshObject::intersect(const Ray &ray, Hit &hit) {
+    bool MeshObject::intersect(const Ray &ray, Hit &hit) const {
 
         return bboxBinTree->intersect(ray, hit);
     }
 
     // -----------------------------------------------------
 
-    Point MeshObject::getCenter() {
+    Point MeshObject::getCenter() const {
         return center;
     }
 
     // -----------------------------------------------------
 
-    Point MeshObject::getMin() { return min; }
-    Point MeshObject::getMax() { return max; }
+    Point MeshObject::getMin() const { return min; }
+    Point MeshObject::getMax() const { return max; }
 
     // -----------------------------------------------------
 
