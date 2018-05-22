@@ -20,6 +20,7 @@ namespace FalconEye {
         : luaContext()
     {
         LUARegisterer::RegisterClasses(luaContext);
+		LUARegisterer::GenerateEnums();
         //loadScripts();
     }
 
@@ -27,6 +28,7 @@ namespace FalconEye {
         : luaContext()
     {
         LUARegisterer::RegisterClasses(luaContext);
+		LUARegisterer::GenerateEnums();
         //loadScripts();
         configure(config_file);
     }
@@ -40,6 +42,7 @@ namespace FalconEye {
         {
             config_RunScripts();
             config_SetDefaultRenderOption();
+            config_SetLuaPath();
         }
         else
         {
@@ -162,6 +165,28 @@ namespace FalconEye {
         else
         {
             cerr << "configuration file does not define variable \"defaultRenderOptions\" or it is not a table\n";
+        }
+        return 0;
+    }
+    
+    int LuaContext::config_SetLuaPath()
+    {
+        LuaRef programConfigRef = getProgramConfigRef();
+        if (programConfigRef.isTable())
+        {
+            try
+            {
+                std::string lua_path = programConfigRef.get<std::string>("lua_path");
+                if (lua_path.size() > 0)
+                {
+					luaContext.setGlobal("LUA_PATH", lua_path);
+				}
+            }
+            catch (const LuaException& e)
+            {
+                cerr << "Error while trying to get value for \"lua_path\" : " << e.what() << '\n';
+                return 1;
+            }
         }
         return 0;
     }

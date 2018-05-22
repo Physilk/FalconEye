@@ -2,6 +2,6 @@
 
 namespace FalconEye {
 
-    SceneRenderOption& SceneRenderOption::defaultRenderOptions = SceneRenderOption();
+    SceneRenderOption SceneRenderOption::defaultRenderOptions = SceneRenderOption();
 
 } // end namespace FalconEye

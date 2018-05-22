@@ -11,6 +11,15 @@
 #include "SceneObject.h"
 #include "light.h"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+using std::ofstream;
+using std::stringstream;
+using std::string;
+
 namespace FalconEye {
     class LUARegisterer
     {
@@ -40,6 +49,29 @@ namespace FalconEye {
                 LUA_BIND_CLASS(InverseSphere, L)
                 LUA_BIND_CLASS(PointLight, L)
                 LUA_BIND_CLASS(PointLight::AttenuationParameters, L)
+                LUA_BIND_CLASS(ColorSampler, L)
+                LUA_BIND_CLASS(ScalarSampler, L)
+                LUA_BIND_CLASS(NormalSampler, L)
+                LUA_BIND_CLASS(ConstantColorSampler, L)
+                LUA_BIND_CLASS(TextureColorSampler, L)
+                LUA_BIND_CLASS(ConstantScalarSampler, L)
+                LUA_BIND_CLASS(TextureNormalSampler, L)
+        }
+        
+        static inline void GenerateEnums(string generatedEnumFilePath = "./data/lua/generated/enums.lua")
+        {
+            ofstream file = ofstream(generatedEnumFilePath, std::ios::out | std::ios::trunc);
+            if (file.is_open())
+            {
+				stringstream ss;
+				LUA_ENUM_WRITE_ENUM(TextureChannel, ss)
+				LUA_ENUM_WRITE_ENUM(TextureType, ss)
+				
+				file << ss.str();
+				file.close();
+			} else {
+				std::cerr << "Warning: could not write generated enum to file" << generatedEnumFilePath << '\n';
+			}
         }
     };
 }

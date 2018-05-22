@@ -7,6 +7,8 @@ programConfig = {
     },
 
     mainScript = "test_lua.lua",
+    
+    lua_path = "?;?.lua;./data/lua/?;./data/lua/?.lua;./data/lua/generated/?;./data/lua/generated/?.lua",
 
     defaultRenderOptions = SceneRenderOption(800, 600, 60, 5, 1),
 }

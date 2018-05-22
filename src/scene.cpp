@@ -7,6 +7,8 @@
 #include "scene.h"
 #include "tools.h"
 
+#include <cmath>
+
 namespace FalconEye {
 
     // -----------------------------------------------------------------------
@@ -151,11 +153,13 @@ namespace FalconEye {
     // -----------------------------------------------------------------------
 
     Color Scene::processPixelColor(const Ray & ray, const Hit &hit, const size_t possible_reflection_bounce) {
-        Color albedoColor = hit.p_object->getColor(hit.uv.x, hit.uv.y);
+        const Material_ptr object_material = hit.p_object->getMaterial();
+        const SampleParameters sampleParam = SampleParameters(hit.uv);
+        Color albedoColor = object_material->getColor(sampleParam);
         Color reflectColor = Color(0, 0, 0);
         Color refractColor = Color(0, 0, 0);
-        float reflectivity = hit.p_object->getReflectivity();
-        float refraction = hit.p_object->getRefraction(hit.uv.x, hit.uv.y);
+        float reflectivity = object_material->getReflectivity(sampleParam);
+        float transparency = 1 - albedoColor.a; // 1 - opacity
         const float delta = 0.001f;
         const float fresnel_factor_0 = 0.8f;
 
@@ -186,9 +190,9 @@ namespace FalconEye {
             }
 
         }
-        if (refraction > 0 && possible_reflection_bounce > 0) {
+        if (transparency > 0 && possible_reflection_bounce > 0) {
 
-            const float n2 = hit.p_object->getRefractionValue();
+            const float n2 = object_material->getRefraction(sampleParam);
 
             Vector refractionVector = Tools::refract(hit.n, ray.direction, ray.n, n2);
 
@@ -212,9 +216,9 @@ namespace FalconEye {
         }
 
         float fresnel_factor = Tools::fresnelFactor(fresnel_factor_0, hit.n, ray.direction);
-        albedoColor = (1 - reflectivity - refraction) * albedoColor + reflectivity * reflectColor + refraction * refractColor;
+        albedoColor = (1 - reflectivity - transparency) * albedoColor + reflectivity * reflectColor + transparency * refractColor;
 
-        float shininess = hit.p_object->getShininess();
+        float shininess = object_material->getShininess(sampleParam);
         Color ambientColor = albedoColor * shadow_coeficient;
 
 
@@ -270,7 +274,7 @@ namespace FalconEye {
                         specularAngle = 0;
                     else if (specularAngle > 1)
                         specularAngle = 1;
-                    specular = pow(specularAngle, shininess);
+                    specular = std::pow(specularAngle, shininess);
                 }
             }
 

@@ -38,6 +38,7 @@ namespace FalconEye {
 
         int config_RunScripts();
         int config_SetDefaultRenderOption();
+        int config_SetLuaPath();
     };
 
 } // end namespace FalconEye

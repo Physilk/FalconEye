@@ -4,6 +4,9 @@
 #include "LuaIntf/LuaIntf.h"
 #include <vector>
 #include <map>
+#include <sstream>
+
+using std::stringstream;
 
 #define LUA_BINDING_METHOD_NAME _LUA_BindToLUA
 
@@ -30,7 +33,22 @@
 #define LUA_BIND_CLASS(CLASS, LUA_STATE) CLASS::LUA_BINDING_METHOD_NAME (LUA_STATE);
 #define LUA_END_BIND_METHODS .endClass(); }
 
+//----------------------------------------------------------------------
+//-----------------ENUMS------------------------------------------------
+//----------------------------------------------------------------------
 
+#define END_LINE '\n'
+
+#define LUA_ENUM_FUNCTION_NAME _Lua_EnumToLUA
+
+#define LUA_ENUM_BEGIN_WRITE_FUNTION(ENUM) inline stringstream& LUA_ENUM_FUNCTION_NAME (stringstream& fs) { fs << #ENUM << " = {}" << END_LINE
+#define LUA_ENUM_WRITE_VALUE(ENUM, VALUE) << #ENUM << "." << #VALUE << " = " << static_cast<int>(Type::VALUE) << END_LINE
+#define LUA_ENUM_END_WRITE_FUNCTION << END_LINE << END_LINE; return fs;} 
+
+#define LUA_ENUM_WRITE_ENUM(ENUM, STREAM) ENUM::LUA_ENUM_FUNCTION_NAME(STREAM);
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 namespace LuaIntf
 {
     LUA_USING_SHARED_PTR_TYPE(std::shared_ptr);

@@ -4,7 +4,7 @@ local SLD2_image = libDir .. "SDL2_image-2.0.1/"
 local SDL2 = libDir .. "SDL2-2.0.8/"
 local glew = libDir .. "glew-2.1.0/"
 local lua = libDir .."lua/"
-local boost = libDir .. "D:/Developpement/boost_1_66_0/"
+local boost = "D:/Developpement/boost_1_66_0/"
 
 local libs_dir_release_x64 = { SLD2_image .. "lib/x64/", SDL2 .. "lib/x64",  glew .. "lib/Release/x64/", lua,  boost .. "stage/lib" }
 local libs_dir_release_x86 = { SLD2_image .. "lib/x86/", SDL2 .. "lib/x86",  glew .. "lib/Release/Win32/", lua,  boost .. "stage/lib"}
@@ -30,15 +30,17 @@ solution "gKit2light"
 		flags { "Optimize" }
 
 	configuration "linux"
+		includedirs ("../lua/include/")
+		libdirs { "../lua/" }
 		buildoptions { "-mtune=native" }
-		buildoptions { "-std=c++11" }
+		buildoptions { "-std=c++14" }
 		buildoptions { "-W -Wall -Wextra -Wsign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable", "-pipe" }
 		buildoptions { "-flto"}
 		linkoptions { "-flto"}
-		links { "GLEW", "SDL2", "SDL2_image", "GL", "pthread", "png"} -- TODO ajouter png aux autres config
+		links { "GLEW", "SDL2", "SDL2_image", "GL", "pthread", "png", "lua53", "boost_filesystem", "boost_system"} -- TODO ajouter png aux autres config
 		buildoptions { "-fopenmp" }
 		linkoptions { "-fopenmp" }
-		defines { "NB_THREAD=16" }
+		defines { "NB_THREADS=16" }
         defines (global_defines)
 
 	configuration { "windows" }

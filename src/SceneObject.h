@@ -40,13 +40,7 @@ namespace FalconEye {
         virtual size_t getCount() const { return 1; }
 
         void setMaterial(const Material_ptr &m) { material = m; }
-        Material_ptr getMaterial() { return material; }
-
-        Color getColor(float u, float v) const { return material->getColor(u, v); }
-        float getShininess() const { return material->getShininess(); }
-        float getReflectivity() const { return material->getReflectivity(); }
-        float getRefraction(float u, float v) const { return 1 - material->getColor(u, v).a; }
-        float getRefractionValue() const { return material->getRefraction(); }
+        const Material_ptr getMaterial() const { return material; }
 
         LUA_BEGIN_BIND_METHODS(SceneObject)
             LUA_BIND_CONSTRUCTOR_NOARGS
@@ -95,7 +89,6 @@ namespace FalconEye {
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(Plan, SceneObject)
             LUA_BIND_CONSTRUCTOR_NOARGS
             LUA_BIND_CONSTRUCTOR_SP(Plan, Point, Vector, Material_ptr&)
-            //.addFactory([](Point p, Vector v, Material_ptr m) {return std::shared_ptr<Plan>(new Plan(p, v, m)); })
             LUA_BIND_PROPERTY(Plan, material, getMaterial, setMaterial)
             LUA_BIND_PROPERTY(Plan, origin, getOrigin, setOrigin)
             LUA_BIND_PROPERTY(Plan, normal, getNormal, setNormal)
@@ -133,7 +126,6 @@ namespace FalconEye {
 
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(Sphere, SceneObject)
             LUA_BIND_CONSTRUCTOR_SP(Sphere, Point, float, Material_ptr&)
-            //.addFactory([](Point p, float r, Material_ptr m) {return std::shared_ptr<Sphere>(new Sphere(p, r, m)); })
             LUA_BIND_PROPERTY(Sphere, material, getMaterial, setMaterial)
             LUA_BIND_PROPERTY(Sphere, center, getLocalCenter, setLocalCenter)
             LUA_BIND_PROPERTY(Sphere, radius, getRadius, setRadius)
@@ -156,7 +148,6 @@ namespace FalconEye {
 
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(InverseSphere, Sphere)
             LUA_BIND_CONSTRUCTOR_SP(InverseSphere, Point, float, Material_ptr&)
-            //.addFactory([](Point p, float r, Material_ptr m) {return std::shared_ptr<InverseSphere>(new InverseSphere(p, r, m)); })
             LUA_BIND_PROPERTY(InverseSphere, material, getMaterial, setMaterial)
             LUA_BIND_PROPERTY(InverseSphere, center, getLocalCenter, setLocalCenter)
             LUA_BIND_PROPERTY(InverseSphere, radius, getRadius, setRadius)
@@ -216,7 +207,6 @@ namespace FalconEye {
 
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(Triangle, Sphere)
             LUA_BIND_CONSTRUCTOR_SP(Triangle, Point, Point, Point, Material_ptr&, _opt<vec2>, _opt<vec2>, _opt<vec2>)
-            //.addFactory([](Point p0, Point p1, Point p2, Material_ptr m) {return std::shared_ptr<Triangle>(new Triangle(p0, p1, p2, m)); })
             LUA_BIND_PROPERTY(Triangle, v0, getV0, setV0)
             LUA_BIND_PROPERTY(Triangle, v1, getV1, setV1)
             LUA_BIND_PROPERTY(Triangle, v2, getV2, setV2)
@@ -376,7 +366,6 @@ namespace FalconEye {
 
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(MeshObject, SceneObject)
             LUA_BIND_CONSTRUCTOR_SP(MeshObject, Transform, const char*, Material_ptr)
-            //.addFactory([](Transform t, const char* s, Material_ptr m) {return std::shared_ptr<MeshObject>(new MeshObject(t, s, m)); })
             LUA_BIND_PROPERTY(MeshObject, useColors, getUseColors, setUseColors)
             LUA_BIND_PROPERTY(MeshObject, useUV, getUseUV, setUseUV)
             LUA_BIND_PROPERTY(MeshObject, smoothTriangles, getSmoothTriangles, setSmoothTriangles)

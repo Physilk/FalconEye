@@ -4,6 +4,12 @@
 #include "SceneObject.h"
 #include "tools.h"
 
+#include <cmath>
+
+using std::pow;
+using std::atan2;
+using std::asin;
+
 namespace FalconEye {
 
     // -----------------------------------------------------
