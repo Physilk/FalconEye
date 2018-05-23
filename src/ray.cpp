@@ -1,6 +1,23 @@
 #include "ray.h"
 
 namespace FalconEye {
+	
+	Ray::Ray(const Point& o, const Point& e, float i, const SceneObject* obj)
+		: origin(o)
+		, direction()
+		, n(i)
+		, emmiter(obj)
+		{
+			direction = normalize(Vector(o, e));
+		}
+        
+	Ray::Ray(const Point& o, const Vector& v, float i, const SceneObject* obj)
+		: origin(o)
+		, direction(v)
+		, n(i)
+		, emmiter(obj)
+		{}
+			
     Ray make_ray(const Point& o, const Point& e, float i)
     {
         Ray r;

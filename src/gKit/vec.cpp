@@ -3,6 +3,15 @@
 
 #include "vec.h"
 
+bool Point::equals(const Point& other) const
+{
+	return x == other.x && y == other.y && z == other.z;
+}
+
+bool Vector::equals(const Vector& other) const
+{
+	return x == other.x && y == other.y && z == other.z;
+}
 
 float distance( const Point& a, const Point& b )
 {

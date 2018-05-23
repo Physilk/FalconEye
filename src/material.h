@@ -241,6 +241,12 @@ namespace FalconEye {
 
         Material(const Material&) = default;
 
+		bool hasAlbedoSampler() const { return albedoSampler.get() != nullptr; }
+		bool hasNormalSampler() const { return normalSampler.get() != nullptr; }
+		bool hasShininessSampler() const { return shininessSampler.get() != nullptr; }
+		bool hasReflectivitySampler() const { return reflectivitySampler.get() != nullptr; }
+		bool hasRefractionSampler() const { return refractionSampler.get() != nullptr; }
+		
         Color getColor(const SampleParameters& p) const;
         float getShininess(const SampleParameters& p) const;
         float getReflectivity(const SampleParameters& p) const;

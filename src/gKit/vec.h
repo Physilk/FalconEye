@@ -38,12 +38,16 @@ struct Point
     void setX(float parX) { x = parX; }
     void setY(float parY) { y = parY; }
     void setZ(float parZ) { z = parZ; }
+    
+    //for LUA
+    bool equals(const Point& other) const;
 
     LUA_BEGIN_BIND_METHODS(Point)
         LUA_BIND_CONSTRUCTOR(float, float, float)
         LUA_BIND_PROPERTY(Point, x, getX, setX)
         LUA_BIND_PROPERTY(Point, y, getY, setY)
         LUA_BIND_PROPERTY(Point, z, getZ, setZ)
+        LUA_BIND_METHOD_ARGS(Point, equals, Point)
     LUA_END_BIND_METHODS
 };
 
@@ -76,14 +80,17 @@ struct Vector
     float getZ() const { return z; }
 
     void setX(float parX) { x = parX; }
-    void setY(float parY) { x = parY; }
-    void setZ(float parZ) { x = parZ; }
+    void setY(float parY) { y = parY; }
+    void setZ(float parZ) { z = parZ; }
 
+	//for LUA
+	bool equals(const Vector& other) const;
     LUA_BEGIN_BIND_METHODS(Vector)
         LUA_BIND_CONSTRUCTOR(float, float, float)
         LUA_BIND_PROPERTY(Vector, x, getX, setX)
         LUA_BIND_PROPERTY(Vector, y, getY, setY)
         LUA_BIND_PROPERTY(Vector, z, getZ, setZ)
+        LUA_BIND_METHOD_ARGS(Vector, equals, Vector)
     LUA_END_BIND_METHODS
 };
 
@@ -135,7 +142,7 @@ struct vec2
     float getY() const { return y; }
 
     void setX(float parX) { x = parX; }
-    void setY(float parY) { x = parY; }
+    void setY(float parY) { y = parY; }
 
     LUA_BEGIN_BIND_METHODS(vec2)
         LUA_BIND_CONSTRUCTOR(float, float)

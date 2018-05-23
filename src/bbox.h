@@ -23,10 +23,10 @@ namespace FalconEye {
             max(p2)
         {}
 
-        bool intersect(const Ray &ray);
-        bool isInside(const Point &p);
+        bool intersect(const Ray &ray) const;
+        bool isInside(const Point &p) const;
 
-        Axis splitOnLargestFace(Point &min_bis, Point &max_bis);
+        Axis splitOnLargestFace(Point &min_bis, Point &max_bis) const;
 
         friend std::ostream & operator<<(std::ostream &os, const BBox &bbox) {
             os << "bbox:\n";

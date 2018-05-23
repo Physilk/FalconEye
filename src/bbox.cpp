@@ -2,7 +2,7 @@
 #include "bbox.h"
 
 namespace FalconEye {
-    bool BBox::intersect(const Ray &ray) {
+    bool BBox::intersect(const Ray &ray) const {
         float tmin, tmax, tymin, tymax, tzmin, tzmax;
         float divx, divy, divz;
 
@@ -48,7 +48,7 @@ namespace FalconEye {
         return true;
     }
 
-    bool BBox::isInside(const Point &p) {
+    bool BBox::isInside(const Point &p) const {
         if (p.x < min.x || p.x > max.x)
             return false;
         if (p.y < min.y || p.y > max.y)
@@ -58,7 +58,7 @@ namespace FalconEye {
         return true;
     }
 
-    Axis BBox::splitOnLargestFace(Point &min_bis, Point &max_bis) {
+    Axis BBox::splitOnLargestFace(Point &min_bis, Point &max_bis) const {
         min_bis = min;
         max_bis = max;
 

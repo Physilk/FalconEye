@@ -1,6 +1,10 @@
 
 #include "color.h"
 
+bool Color::equals(const Color& other) const
+{
+	return r == other.r && g == other.g && b == other.b && a == other.a;
+}
 
 Color Black( )
 {

@@ -103,11 +103,11 @@ namespace FalconEye {
             g->split(max_objects_per_node);
     }
 
-    bool BBoxBinTree::intersect(const Ray &ray, Hit &hit) {
+    bool BBoxBinTree::intersect(const Ray &ray, Hit &hit) const {
         return parent.intersect(ray, hit);
     }
 
-    bool BBoxBinTreeNode::intersect(const Ray &ray, Hit &hit) {
+    bool BBoxBinTreeNode::intersect(const Ray &ray, Hit &hit) const {
         //intersection avec la node?
         if (!bbox.intersect(ray))
             return false;

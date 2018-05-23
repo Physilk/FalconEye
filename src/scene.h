@@ -12,6 +12,8 @@
 
 using std::vector;
 using LuaIntf::_def;
+using FalconEye::SceneRenderer::SceneRenderOption;
+using FalconEye::SceneRenderer::SceneRenderOption_ptr;
 
 namespace FalconEye {
 
@@ -47,6 +49,9 @@ namespace FalconEye {
         Scene(Orbiter o) : objects(), lights(), camera(o), bboxBinTree(nullptr) { initBounds(); }
 
         ~Scene();
+        
+        const BBoxBinTree* getObjects() const { return bboxBinTree; }
+        const vector<PointLight_ptr>& getPointLights() const { return lights; }
 
         void addObject(SceneObject_ptr o);
         void addLight(PointLight_ptr l) { lights.push_back(l); }
@@ -56,7 +61,7 @@ namespace FalconEye {
 
         size_t getCount();
 
-        Orbiter getOrbiter() { return camera; }
+        Orbiter getOrbiter() const { return camera; }
         void setOrbiter(Orbiter o) { camera = o; }
 
         LUA_BEGIN_BIND_METHODS(Scene)
@@ -69,7 +74,8 @@ namespace FalconEye {
             LUA_BIND_METHOD_ARGS(Scene, renderScene, const char *, _opt<SceneRenderOption_ptr>)
             LUA_BIND_PROPERTY(Scene, orbiter, getOrbiter, setOrbiter)
             LUA_END_BIND_METHODS
+            
     };
-}
+} // end namespace FalconEye
 
 #endif

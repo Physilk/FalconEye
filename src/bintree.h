@@ -32,7 +32,7 @@ namespace FalconEye {
         std::vector<SceneObject *> getObjects() const { return objects; }
         BBox getBBox() const { return bbox; }
 
-        bool intersect(const Ray &, Hit &);
+        bool intersect(const Ray &, Hit &) const;
 
         void split(size_t max_objects_per_node);
     };
@@ -48,7 +48,7 @@ namespace FalconEye {
 
         ~BBoxBinTree() = default;
 
-        bool intersect(const Ray &, Hit &);
+        bool intersect(const Ray &, Hit &) const;
 
         void split(size_t max_objects_per_node = 10) { parent.split(max_objects_per_node); }
     };

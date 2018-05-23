@@ -7,6 +7,8 @@
 #include "scene.h"
 #include "tools.h"
 
+#include "ray.h"
+
 #include <cmath>
 
 namespace FalconEye {
@@ -18,7 +20,11 @@ namespace FalconEye {
 
         if (bboxBinTree == nullptr)
             preProcess();
-        
+            
+        Image output = SceneRenderer::renderScene(*this, ro);
+        write_image(output, filename);
+        return;
+        /*
         const SceneRenderOption* ro_to_use = (ro.get() == nullptr) ? &SceneRenderOption::defaultRenderOptions : ro.get();
         const SceneRenderOption& opt = *ro_to_use;
 
@@ -104,7 +110,7 @@ namespace FalconEye {
         std::cout << "render time: " << ms << "ms" << std::endl;
 
         // enregistrer l'image
-        write_image(image, filename);
+        write_image(image, filename);*/
     }
 
     // -----------------------------------------------------------------------

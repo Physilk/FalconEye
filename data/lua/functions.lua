@@ -1,21 +1,23 @@
 
-function createChessBoard(scene, width, height)
-    local halfWidth = width / 2
-    local halfHeight = height / 2
-    local mat_tile_dark = Material(Color(0.1, 0.1, 0.1, 1), 32, 0.1, 1)
-    local mat_tile_light = Material(Color(0.8, 0.8, 0.8, 1), 32, 0.1, 1)
+function createChessBoard(scene, width, height, tile_size, material_1, material_2)
+	if tile_size == nil then
+		tile_size = 1
+	end
+    local halfWidth = (width * tile_size) / 2
+    local halfHeight = (height * tile_size) / 2
+    local halfeTileSize = tile_size / 2
 
-    local materials = {mat_tile_dark, mat_tile_light}
+    local materials = {material_1, material_2}
     local color_index = 0
     local last_row_color_index = 1
 
     for x = 0, width do
         color_index = (last_row_color_index + 1) % 2
         for y = 0, height do
-            local p1 = Point(x - halfWidth - 0.5, 0, y - halfHeight - 0.5)
-            local p2 = Point(x - halfWidth + 0.5, 0, y - halfHeight - 0.5)
-            local p3 = Point(x - halfWidth + 0.5, 0, y - halfHeight + 0.5)
-            local p4 = Point(x - halfWidth - 0.5, 0, y - halfHeight + 0.5)
+            local p1 = Point(x * tile_size - halfWidth - halfeTileSize, 0, y * tile_size - halfHeight - halfeTileSize)
+            local p2 = Point(x * tile_size - halfWidth + halfeTileSize, 0, y * tile_size - halfHeight - halfeTileSize)
+            local p3 = Point(x * tile_size - halfWidth + halfeTileSize, 0, y * tile_size - halfHeight + halfeTileSize)
+            local p4 = Point(x * tile_size - halfWidth - halfeTileSize, 0, y * tile_size - halfHeight + halfeTileSize)
 
             scene:addObject(Triangle(p4, p3, p2, materials[color_index + 1]))
             scene:addObject(Triangle(p4, p2, p1, materials[color_index + 1]))
@@ -33,6 +35,16 @@ function createPointLigth(position, range, color)
 end
 
 function pauseUntilEnter()
-    io.output():write("Press ENTER to continue")
+    io.output():write("Press any key to continue")
     io.input():read(1)
+end
+
+function tablelength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
+end
+
+function colorToString(c)
+  return "r=" .. c.r .. " g=" .. c.g .. " b=" .. c.b .. " a=" .. c.a 
 end

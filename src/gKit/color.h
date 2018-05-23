@@ -18,9 +18,27 @@ struct Color
     Color( const Color& color, const float alpha ) : r(color.r), g(color.g), b(color.b), a(alpha) {}  // remplace alpha.
     
     float r, g, b, a;
+    
+    float getR() const { return r; }
+    float getG() const { return g; }
+    float getB() const { return b; }
+    float getA() const { return a; }
 
+    void setR(float parR) { r = parR; }
+    void setG(float parG) { g = parG; }
+    void setB(float parB) { b = parB; }
+    void setA(float parA) { a = parA; }
+
+	//for LUA
+	bool equals(const Color& other) const;
+	
     LUA_BEGIN_BIND_METHODS(Color)
         LUA_BIND_CONSTRUCTOR(float, float, float, float)
+        LUA_BIND_PROPERTY(Color, r, getR, setR)
+        LUA_BIND_PROPERTY(Color, g, getG, setG)
+        LUA_BIND_PROPERTY(Color, b, getB, setB)
+        LUA_BIND_PROPERTY(Color, a, getA, setA)
+        LUA_BIND_METHOD_ARGS(Color, equals, Color)
         LUA_END_BIND_METHODS
 };
 

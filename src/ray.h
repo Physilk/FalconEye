@@ -13,12 +13,15 @@ namespace FalconEye {
         Vector direction;
         //refraction of the environment
         float n;
+        const SceneObject* emmiter;
+        
+        Ray() = default;
+        Ray(const Point& o, const Point& e, float i = 1, const SceneObject* obj = nullptr);
+        Ray(const Point& o, const Vector& v, float i = 1, const SceneObject* obj = nullptr);
     };
 
     Ray make_ray(const Point& o, const Point& e, float i = 1);
     Ray make_ray(const Point& o, const Vector& d, float i = 1);
-
-    class SceneObject;
 
     struct Hit
     {
