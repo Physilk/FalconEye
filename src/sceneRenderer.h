@@ -6,6 +6,11 @@
 
 #include "luaObjectInterface.h"
 #include "gKit/image.h"
+#include "gKit/vec.h"
+
+#include "Threading/JobBase.h"
+
+using ::Threading::TJobBase;
 
 namespace FalconEye {
 
@@ -58,6 +63,9 @@ namespace FalconEye {
 
     using SceneRenderOption_ptr = std::shared_ptr<SceneRenderOption>;
     
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
+    
     class Sampler {
 	public:
 		struct Sample {
@@ -90,6 +98,8 @@ namespace FalconEye {
 		int totalSamples() { return sample_per_pixels * (x_end - x_start) * (y_end - y_start); }
 	};
 	
+	//------------------------------------------------------------------
+	
 	class BasicRandomSampler : public Sampler {
 	protected:
 		int current_x;
@@ -111,11 +121,45 @@ namespace FalconEye {
 		virtual bool getNextSample(Sample &s);
 	};
 	
+	//------------------------------------------------------------------
+	//------------------------------------------------------------------
+	
+	class RenderingJob : public TJobBase {
+	protected:
+		const Scene* scene;
+		Sampler* sampler;
+		Image* output;
+		const SceneRenderOption* renderOptions;
+	public:
+		RenderingJob() = delete;
+		RenderingJob(const RenderingJob&) = default;
+		RenderingJob(const Scene* sc, Sampler* smpl, Image* img, const SceneRenderOption* ro)
+		: TJobBase()
+		, scene(sc)
+		, sampler(smpl)
+		, output(img)
+		, renderOptions(ro)
+		{}
+		
+	private:
+		virtual int VirtualExecute();
+	};
+	
+	using RenderingJob_ptr = std::shared_ptr<RenderingJob>;
+	
+	//------------------------------------------------------------------
+	//------------------------------------------------------------------
+	
 	Image renderScene(const Scene& s, const SceneRenderOption_ptr& ro = nullptr);
 	bool castRay(const Scene& s, const Ray& r, Hit& h);
 	bool castRay(const Scene& s, const Ray& r);
 	Color shade(const Scene& s, const Ray& r, const Hit& h, int allowed_child_ray_depth = 0);
 	 
+	//geometry functions
+	void createCoordinateSystem(const Vector& N, Vector& Nt, Vector& Nb);
+	Vector uniformSampleHemisphere(const float &r1, const float &r2); 
+	Vector rotateToCoordinateSystem(const Vector& v, const Vector& N, const Vector& Nt, const Vector& Nb);
+	
 	} // end namespace SceneRenderer
 
 } // end namespace FalconEye

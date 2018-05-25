@@ -37,6 +37,7 @@ solution "gKit2light"
 		buildoptions { "-W -Wall -Wextra -Wsign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable", "-pipe" }
 		buildoptions { "-flto"}
 		linkoptions { "-flto"}
+		linkoptions { "-pthread"}
 		links { "GLEW", "SDL2", "SDL2_image", "GL", "pthread", "png", "lua53", "boost_filesystem", "boost_system"} -- TODO ajouter png aux autres config
 		buildoptions { "-fopenmp" }
 		linkoptions { "-fopenmp" }
@@ -86,6 +87,7 @@ solution "gKit2light"
  -- description des fichiers communs
 local gkit_files = { "src/gKit/*.cpp", "src/gKit/*.h" }
 local FalconEye_files = { "src/*.cpp", "src/*.h", "src/*.hpp"}
+local Threading_files = { "src/Threading/*.cpp", "src/Threading/*.h", "src/Threading/*.hpp"}
 
 project("FalconEye")
 	language "c++"
@@ -93,3 +95,4 @@ project("FalconEye")
 	targetdir "bin"
 	files (gkit_files)
 	files (FalconEye_files)
+	files (Threading_files)

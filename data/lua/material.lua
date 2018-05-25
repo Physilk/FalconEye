@@ -1,6 +1,6 @@
 
 
-MaterialInterface_sampler_arrays = {
+local MaterialInterface_sampler_arrays = {
 	cst_color_samplers = {},
 	--cst_normal_samplers = {},
 	cst_scalar_samplers = {},
@@ -36,7 +36,7 @@ end
 --	return MaterialInterface_constant_sampler_arrays.normal_samplers[cst]
 --end
 
-MaterialInterface_defaults = {
+local MaterialInterface_defaults = {
 	albedo_sampler = getConstantColorSampler(Color(0.75, 0.75, 0.75, 1.0)),
 	normal_sampler = NormalSampler(),
 	shininess_sampler = getConstantScalarSampler(16),

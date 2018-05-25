@@ -5,6 +5,10 @@
 #include "tools.h"
 #include "material.h"
 
+#include "Threading/ThreadManager.h"
+
+using Threading::TThreadManager;
+
 namespace FalconEye {
 	namespace SceneRenderer {
 		
@@ -37,24 +41,58 @@ namespace FalconEye {
 		return true;
 	}
 	
+	int RenderingJob::VirtualExecute()
+	{
+		const int max_depth = renderOptions->getReflectionBounce();
+		
+		// generer l'origine et l'extremite du rayon
+		Orbiter camera = scene->getOrbiter();
+		Point o = camera.position();
+		Point p;
+		Point e;
+		Vector dx, dy;
+		
+		Sampler::Sample current_sample;
+		
+		camera.frame(renderOptions->getWidth(), renderOptions->getHeight(), 0, renderOptions->getFov(), p, dx, dy);
+		
+		while (sampler->getNextSample(current_sample))
+        {
+			e = p + current_sample.fx * dx + current_sample.fy * dy;
+
+			Ray ray = make_ray(o, e);
+			Hit hit;
+
+			// calculer les intersections
+			if (castRay(*scene, ray, hit)) {
+				//std::cout << "before x=" << current_sample.x << " y= " << current_sample.y << std::endl;
+				(*output)(current_sample.x, current_sample.y) = (*output)(current_sample.x, current_sample.y) + shade(*scene, ray, hit, max_depth);
+				
+				//std::cout << "after" << std::endl;
+			}
+		}
+		
+		return 0;
+	}
+	
 	Image renderScene(const Scene& s, const SceneRenderOption_ptr& ro)
 	{
 		std::cout << "starting rendering" << std::endl;
 		const SceneRenderOption* ro_to_use = (ro.get() == nullptr) ? &SceneRenderOption::defaultRenderOptions : ro.get();
         const SceneRenderOption& opt = *ro_to_use;
 
-        const int width = opt.getWidth();
-        const int height = opt.getHeight();
-        const int max_depth = opt.getReflectionBounce();
+        const uint32_t width = opt.getWidth();
+        const uint32_t height = opt.getHeight();
+        //const int max_depth = opt.getReflectionBounce();
         
         static const int sample_per_pixels = 1;
-        Sampler::Sample current_sample;
+        //Sampler::Sample current_sample;
         
         Image output_image(width, height);
-        BasicRandomSampler sampler(0, width, 0, height, sample_per_pixels);
+        //BasicRandomSampler sampler(0, width, 0, height, sample_per_pixels);
         
 		// generer l'origine et l'extremite du rayon
-		Orbiter camera = s.getOrbiter();
+		/*Orbiter camera = s.getOrbiter();
 		Point o = camera.position();
 		Point p;
 		Point e;
@@ -76,14 +114,53 @@ namespace FalconEye {
 				
 				//std::cout << "after" << std::endl;
 			}
-		}
+		}*/
 		
+		static constexpr uint32_t imageSubDivision = 2;
+		static constexpr uint32_t nbJobs = imageSubDivision * imageSubDivision;
+		
+		
+		TThreadManager threadManager;
+		threadManager.SetFinishAllJobBeforeExiting(true);
+		threadManager.Init();
+		
+		Sampler* samplers[nbJobs];
+		int startX = 0;
+		auto begin = std::chrono::high_resolution_clock::now();
+		for (uint32_t i = 0; i < imageSubDivision; ++i)
+		{
+			int startY = 0;
+			int endX = std::min(startX + width / imageSubDivision, width);
+			for (uint32_t j = 0; j < imageSubDivision; ++j)
+			{
+				int endY = std::min(startY + height / imageSubDivision, height);
+				Sampler* newSampler = new BasicRandomSampler(startX, endX, startY, endY, sample_per_pixels);
+				samplers[i + j * imageSubDivision] = newSampler;
+				threadManager.AddJob(RenderingJob_ptr(new RenderingJob(&s, newSampler, &output_image, ro_to_use)));
+				startY = endY;
+			}
+			startX = endX;
+		}
+		threadManager.ShutDown();
 		std::cout << "Averraging" << std::endl;
 		for (int x = 0; x < width; ++x)
 		{
 			for (int y = 0; y < height; ++y)
 			{
 				output_image(x, y) = output_image(x, y) / sample_per_pixels;
+			}
+		}
+		auto end = std::chrono::high_resolution_clock::now();
+        auto dur = end - begin;
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
+        std::cout << "render time: " << ms << "ms" << std::endl;
+		
+		//cleaning
+		for (uint32_t i = 0; i < imageSubDivision; ++i)
+		{
+			for (uint32_t j = 0; j < imageSubDivision; ++j)
+			{
+				delete samplers[i + j * imageSubDivision];
 			}
 		}
 		
@@ -111,6 +188,10 @@ namespace FalconEye {
 		return objTree->intersect(r, h);
 	}
 
+	std::default_random_engine generator;
+	//generator.seed(0);
+	std::uniform_real_distribution<float> distribution(0, 1);
+		
 	Color shade(const Scene& scene, const Ray& ray, const Hit& hit, int allowed_child_ray_depth)
 	{
 		if (allowed_child_ray_depth <= 0)
@@ -179,7 +260,7 @@ namespace FalconEye {
             reflectAndRefractColor = f * refractColor + (1 - f) * reflectColor;
 		}
         
-        Color albedoColor = Black();
+        Color directIlumination = Black();
         Color lightAmt = Black(), specularColor = Black(); 
         // albedo component
         if (hit_transparency < 1.0f)
@@ -213,18 +294,70 @@ namespace FalconEye {
 				Vector reflectionDirection = Tools::reflect(-lightDir, hit.n); 
 				specularColor = specularColor + std::pow(std::max(0.f, -dot(reflectionDirection, ray.direction)), hit_shininess) * light_color;
 			} 
-			albedoColor = lightAmt * hit_albedo * 0.8f/*kd*/ + specularColor * 0.2f /*Ks*/; 
+			//albedoColor = lightAmt * hit_albedo * 0.8f/*kd*/ + specularColor * 0.2f /*Ks*/; 
+			directIlumination = lightAmt * 0.8f/*kd*/ + specularColor * 0.2f /*Ks*/; 
 		}
-		//std::cout << "albedo rgba=" << albedoColor.r << ' ' << albedoColor.g << ' ' << albedoColor.b << ' ' << albedoColor.a << '\n';
-		//std::cout << "hit_albedo rgba=" << hit_albedo.r << ' ' << hit_albedo.g << ' ' << hit_albedo.b << ' ' << hit_albedo.a << '\n';
-		//std::cout << "specularColor rgba=" << specularColor.r << ' ' << specularColor.g << ' ' << specularColor.b << ' ' << specularColor.a << '\n';
-		//std::cout << "lightAmt rgba=" << lightAmt.r << ' ' << lightAmt.g << ' ' << lightAmt.b << ' ' << lightAmt.a << '\n';
-		albedoColor = (hit_reflectivity > 0.0f) ? (hit_reflectivity * reflectColor + (1 - hit_reflectivity) * albedoColor) : albedoColor;
-		//std::cout << "albedo rgba=" << albedoColor.r << ' ' << albedoColor.g << ' ' << albedoColor.b << ' ' << albedoColor.a << "reflectivity=" << hit_reflectivity<<'\n';
-		Color directIlumination = albedoColor * hit_albedo.a + hit_transparency * reflectAndRefractColor;
 		
+		//albedoColor = (hit_reflectivity > 0.0f) ? (hit_reflectivity * reflectColor + (1 - hit_reflectivity) * albedoColor) : albedoColor;
+		//Color directIlumination = albedoColor * hit_albedo.a + hit_transparency * reflectAndRefractColor;
 		directIlumination.a = 1.0f;
-		return directIlumination;
+		
+		//return directIlumination * hit_albedo;
+		Color indirectIlumination = Black();
+		static const uint32_t nbSample = 6;
+		
+		Vector Nt, Nb;
+		createCoordinateSystem(hit.n, Nt, Nb);
+		static constexpr float pdf = 1 / (2 * M_PI);
+		for (uint32_t n = 0; n < nbSample; ++n)
+		{
+			float r1 = distribution(generator);
+			float r2 = distribution(generator);
+			Vector sample = uniformSampleHemisphere(r1, r2);
+			Vector sampleWorld = rotateToCoordinateSystem(sample, hit.n, Nt, Nb);
+			Ray undirectRay = Ray(hit.p + hit.n * delta, sampleWorld, ray.n);
+			Hit undirectHit;
+			if (castRay(scene, undirectRay, undirectHit))
+			{
+				indirectIlumination = indirectIlumination + r1 * shade(scene, undirectRay, undirectHit, allowed_child_ray_depth - 1) / pdf;
+			}
+		}
+		indirectIlumination = indirectIlumination / (float)(nbSample);
+		
+		Color hitColor = (directIlumination + indirectIlumination) * hit_albedo / M_PI; 
+		//Color directPlusIndirect = (directIlumination / M_PI + 2 * indirectIlumination) * hit_albedo;
+		//ca fausse probablement pas mal de chose
+		//directPlusIndirect = (hit_reflectivity > 0.0f) ? (hit_reflectivity * reflectColor + (1 - hit_reflectivity) * directPlusIndirect) : directPlusIndirect;
+		return hitColor;
+	}
+
+	void createCoordinateSystem(const Vector& N, Vector& Nt, Vector& Nb)
+	{
+		if (std::fabs(N.x) > std::fabs(N.y))
+			Nt = Vector(N.z, 0, -N.x) / sqrtf(N.x * N.x + N.z * N.z);
+		else
+			Nt = Vector(0, -N.z, N.y) / sqrtf(N.y * N.y + N.z * N.z);
+		Nb = cross(N, Nt);
+	}
+	
+	Vector uniformSampleHemisphere(const float &r1, const float &r2)
+	{
+		// cos(theta) = r1 = y
+		// cos^2(theta) + sin^2(theta) = 1 -> sin(theta) = srtf(1 - cos^2(theta))
+		float sinTheta = sqrtf(1 - r1 * r1);
+		float phi = 2 * M_PI * r2;
+		float x = sinTheta * cosf(phi);
+		float z = sinTheta * sinf(phi);
+		return Vector(x, r1, z);
+	} 
+	
+	Vector rotateToCoordinateSystem(const Vector& v, const Vector& N, const Vector& Nt, const Vector& Nb)
+	{
+		return Vector(
+			v.x * Nb.x + v.y * N.x + v.z * Nt.x,
+			v.x * Nb.y + v.y * N.y + v.z * Nt.y,
+			v.x * Nb.z + v.y * N.z + v.z * Nt.z
+		); 
 	}
 
     
