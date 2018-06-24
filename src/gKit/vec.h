@@ -31,6 +31,8 @@ struct Point
 
     float x, y, z;
 
+    bool operator==(const Point& other) const;
+
     float getX() const { return x; }
     float getY() const { return y; }
     float getZ() const { return z; }

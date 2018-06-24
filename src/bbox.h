@@ -19,6 +19,7 @@ namespace FalconEye {
         Point min;
         Point max;
 
+        BBox() : BBox(InfiniteBox()) {}
         BBox(const Point &p1, const Point &p2) : min(p1),
             max(p2)
         {}
@@ -27,6 +28,8 @@ namespace FalconEye {
         bool isInside(const Point &p) const;
 
         Axis splitOnLargestFace(Point &min_bis, Point &max_bis) const;
+
+        bool operator==(const BBox& other) const;
 
         friend std::ostream & operator<<(std::ostream &os, const BBox &bbox) {
             os << "bbox:\n";
@@ -38,6 +41,20 @@ namespace FalconEye {
             os << "\tmax: z=" << bbox.max.z << std::endl;
 
             return os;
+        }
+
+        static const BBox& InfiniteBox()
+        {
+            static const BBox bbox = BBox(
+                Point(-std::numeric_limits<float>::max(),
+                    -std::numeric_limits<float>::max(),
+                    -std::numeric_limits<float>::max()
+                ),
+                Point(-std::numeric_limits<float>::max(),
+                    std::numeric_limits<float>::max(),
+                    std::numeric_limits<float>::max()
+                ));
+            return bbox;
         }
 
     };

@@ -8,6 +8,7 @@
 
 namespace FalconEye {
     class SceneObject;
+    class BBoxBinTree;
 
     class BBoxBinTreeNode {
 
@@ -18,10 +19,9 @@ namespace FalconEye {
         BBox bbox;
         std::vector<SceneObject *> objects;
 
-        BBoxBinTreeNode();
-
     public:
-
+        BBoxBinTreeNode(BBoxBinTreeNode&& other);
+        BBoxBinTreeNode() = default;
         BBoxBinTreeNode(BBox b, const std::vector<SceneObject *> &o) : d(nullptr),
             g(nullptr),
             bbox(b),
@@ -35,6 +35,8 @@ namespace FalconEye {
         bool intersect(const Ray &, Hit &) const;
 
         void split(size_t max_objects_per_node);
+
+        friend class BBoxBinTree;
     };
 
     class BBoxBinTree {
@@ -43,8 +45,10 @@ namespace FalconEye {
 
         BBoxBinTree() = delete;
 
+        std::vector<SceneObject *> infinite_objects;
+
     public:
-        BBoxBinTree(BBox b, const std::vector<SceneObject *> &o, size_t s) : parent(b, o) { split(s); }
+        BBoxBinTree(BBox b, const std::vector<SceneObject *> &o, size_t s);
 
         ~BBoxBinTree() = default;
 

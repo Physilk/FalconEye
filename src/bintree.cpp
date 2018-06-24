@@ -6,11 +6,20 @@
 using std::vector;
 
 namespace FalconEye {
+
+    BBoxBinTreeNode::BBoxBinTreeNode(BBoxBinTreeNode&& other)
+        : d(other.d)
+        , g(other.g)
+        , bbox(std::move(other.bbox))
+        , objects(std::move(other.objects))
+    {
+        other.d = nullptr;
+        other.g = nullptr;
+    }
+
     BBoxBinTreeNode::~BBoxBinTreeNode() {
-        if (g != nullptr)
-            delete g;
-        if (d != nullptr)
-            delete d;
+        delete g;
+        delete d;
     }
 
     void BBoxBinTreeNode::split(size_t max_objects_per_node) {
@@ -103,8 +112,89 @@ namespace FalconEye {
             g->split(max_objects_per_node);
     }
 
+    BBoxBinTree::BBoxBinTree(BBox b, const std::vector<SceneObject *> &objects, size_t s)
+        : parent()
+    {
+
+        if (b == BBox::InfiniteBox())
+        {
+            std::vector<SceneObject *> newObjectsVector;
+            newObjectsVector.reserve(objects.size());
+
+            float limit = std::numeric_limits<float>::max();
+            Point boundMin = Point(limit, limit, limit);
+            Point boundMax = Point(-limit, -limit, -limit);
+
+            for (SceneObject* o : objects)
+            {
+                Point min = o->getMin();
+                Point max = o->getMax();
+
+                if (BBox(min, max) == BBox::InfiniteBox())
+                {
+                    infinite_objects.push_back(o);
+                }
+                else
+                {
+                    if (boundMax.x < max.x)
+                        boundMax.x = max.x;
+                    if (boundMax.y < max.y)
+                        boundMax.y = max.y;
+                    if (boundMax.z < max.z)
+                        boundMax.z = max.z;
+
+                    if (boundMin.x > min.x)
+                        boundMin.x = min.x;
+                    if (boundMin.y > min.y)
+                        boundMin.y = min.y;
+                    if (boundMin.z > min.z)
+                        boundMin.z = min.z;
+
+                    newObjectsVector.push_back(o);
+                }
+                
+            }
+            parent.bbox = BBox(boundMin, boundMax);
+            parent.objects = newObjectsVector;
+            
+        }
+        else
+        {
+            parent.bbox = b;
+            parent.objects = objects;
+        }
+        split(s);
+    }
+
     bool BBoxBinTree::intersect(const Ray &ray, Hit &hit) const {
-        return parent.intersect(ray, hit);
+
+        bool current_hit = false;
+        bool ever_hit = false;
+        Hit closest_hit;
+
+        
+        for (size_t i = 0; i < infinite_objects.size(); ++i) {
+            if ((current_hit = infinite_objects[i]->intersect(ray, hit))) {
+                if (!ever_hit || hit.t < closest_hit.t) {
+                    closest_hit = hit;
+                }
+                ever_hit = true;
+            }
+        }
+
+        
+        Hit other_hit;
+
+        if (parent.intersect(ray, hit))
+        {
+            if (!ever_hit || hit.t < closest_hit.t) {
+                closest_hit = hit;
+            }
+            ever_hit = true;
+        }
+
+        hit = closest_hit;
+        return ever_hit;
     }
 
     bool BBoxBinTreeNode::intersect(const Ray &ray, Hit &hit) const {

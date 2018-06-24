@@ -89,5 +89,11 @@ namespace FalconEye {
         }
 
     }
+
+    bool BBox::operator==(const BBox& other) const
+    {
+        return min == other.min && max == other.max;
+    }
+
 }
 
