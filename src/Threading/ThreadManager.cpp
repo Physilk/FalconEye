@@ -23,8 +23,8 @@ void TThreadManager::Init()
 
         for(unsigned int i = 0; i < thread_number; ++i)
         {
-            FStopThreadAtomics.push_back(AtomicBool_ptr(new atomic<bool>(false)));
-            TWorkerThreadRunnable runnable = TWorkerThreadRunnable(&FJobQueue, FStopThreadAtomics.back().get());
+            FStopThreadBools.push_back(false);
+            TWorkerThreadRunnable runnable = TWorkerThreadRunnable(this, i);
             FThreads.emplace_back(runnable);
         }
         FInitialized = true;
@@ -44,16 +44,24 @@ void TThreadManager::ShutDown()
 					std::this_thread::yield();
 				}
 			}
-			FStopThreadAtomics[i]->store(true);
+            FStopThreadBools[i] = true;
+            wait_variable.notify_all();
 			if (FThreads[i].joinable())
 			{
 				FThreads[i].join();
 			}
         }
         FThreads.empty();
-        FStopThreadAtomics.empty();
+        FStopThreadBools.empty();
         FInitialized = false;
     }
+}
+
+void TThreadManager::AddJob(TJob_ptr job)
+{
+    std::unique_lock<std::mutex> lck(mtx);
+    FJobQueue.AddJob(job);
+    wait_variable.notify_one();
 }
 
 TThreadManager::~TThreadManager()

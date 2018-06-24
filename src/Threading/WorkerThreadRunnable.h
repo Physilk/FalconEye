@@ -1,6 +1,8 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 #include "JobQueue.h"
 
 using std::atomic;
@@ -8,17 +10,18 @@ using std::atomic;
 namespace Threading
 {
 
+class TThreadManager;
+
 class TWorkerThreadRunnable
 {    
 private:
-    TJobQueue *FJobQueue;
-    atomic<bool> *FStopWhenPossible;
-    
+    TThreadManager *threadManager;
+    unsigned int threadNumber;
 public:
     TWorkerThreadRunnable() = delete;
-    TWorkerThreadRunnable(TJobQueue *parJobQueue, atomic<bool> *parStopAtomic)
-    : FJobQueue(parJobQueue)
-    , FStopWhenPossible(parStopAtomic)
+    TWorkerThreadRunnable(TThreadManager *tm, unsigned int nb)
+    : threadManager(tm)
+    , threadNumber(nb)
     {}
     
     ~TWorkerThreadRunnable() = default;

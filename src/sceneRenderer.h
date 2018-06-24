@@ -8,6 +8,7 @@
 #include "gKit/image.h"
 #include "gKit/vec.h"
 
+#include "ThreadingInterface.h"
 #include "Threading/JobBase.h"
 
 using ::Threading::TJobBase;
@@ -24,40 +25,48 @@ namespace FalconEye {
     private:
         size_t width;
         size_t height;
-        size_t fov;
+        float fov;
         size_t reflection_bounce;
+        size_t sample_per_pixels;
         
 
 
     public:
-        SceneRenderOption() : width(1920),
-            height(1080),
-            fov(60),
-            reflection_bounce(3)
+        SceneRenderOption()
+            : width(1920)
+            , height(1080)
+            , fov(60.0f)
+            , reflection_bounce(3)
+            , sample_per_pixels(1)
         {}
-        SceneRenderOption(size_t w, size_t h, size_t f, size_t b) :width(w),
-            height(h),
-            fov(f),
-            reflection_bounce(b)
+        SceneRenderOption(size_t w, size_t h, float f, size_t b, size_t spp)
+            : width(w)
+            , height(h)
+            , fov(f)
+            , reflection_bounce(b)
+            , sample_per_pixels(spp)
         {}
         void setWidth(size_t w) { width = w; }
         void setHeight(size_t h) { height = h; }
-        void setFov(size_t f) { fov = f % 360; }
+        void setFov(float f) { fov = f; }
         void setReflectionBounce(size_t r) { reflection_bounce = r; }
+        void setSamplerPerPixels(size_t spp) { sample_per_pixels = spp; }
 
         size_t getWidth() const { return width; }
         size_t getHeight() const { return height; }
-        size_t getFov() const { return fov; }
+        float getFov() const { return fov; }
         size_t getReflectionBounce() const { return reflection_bounce; }
+        size_t getSamplerPerPixels() const { return sample_per_pixels; }
 
         static SceneRenderOption defaultRenderOptions;
 
         LUA_BEGIN_BIND_METHODS(SceneRenderOption)
-            LUA_BIND_CONSTRUCTOR_SP(SceneRenderOption, size_t, size_t, size_t, size_t)
+            LUA_BIND_CONSTRUCTOR_SP(SceneRenderOption, size_t, size_t, float, size_t, size_t)
             LUA_BIND_PROPERTY(SceneRenderOption, width, getWidth, setWidth)
             LUA_BIND_PROPERTY(SceneRenderOption, height, getHeight, setHeight)
             LUA_BIND_PROPERTY(SceneRenderOption, fov, getFov, setFov)
             LUA_BIND_PROPERTY(SceneRenderOption, ReflectionBounce, getReflectionBounce, setReflectionBounce)
+            LUA_BIND_PROPERTY(SceneRenderOption, SamplerPerPixels, getSamplerPerPixels, setSamplerPerPixels)
             LUA_END_BIND_METHODS
     };
 

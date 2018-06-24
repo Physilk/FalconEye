@@ -15,10 +15,16 @@ EJobStatus TJobBase::Run()
             ret_status = EJobStatus::Finished_error;
         }
         FStatus.store(ret_status);
+        FEndPromise.set_value();
     }
 
     return FStatus;
 
+}
+
+void TJobBase::WaitFinish()
+{
+    FEndFuture.wait();
 }
 
 }//END namespace Threading

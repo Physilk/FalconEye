@@ -5,7 +5,6 @@
 #include "tools.h"
 #include "material.h"
 
-#include "Threading/ThreadManager.h"
 
 using Threading::TThreadManager;
 
@@ -34,8 +33,10 @@ namespace FalconEye {
 		s.x = current_x;
 		s.y = current_y;
 		
-		s.fx = current_x + (random_engine() / std::default_random_engine::max());
-		s.fy = current_y + (random_engine() / std::default_random_engine::max());
+        float r1 = random_engine();
+        float r2 = random_engine();
+		s.fx = current_x + (r1 / std::default_random_engine::max());
+		s.fy = current_y + (r2 / std::default_random_engine::max());
 		
 		++current_sample;
 		return true;
@@ -66,7 +67,8 @@ namespace FalconEye {
 			// calculer les intersections
 			if (castRay(*scene, ray, hit)) {
 				//std::cout << "before x=" << current_sample.x << " y= " << current_sample.y << std::endl;
-				(*output)(current_sample.x, current_sample.y) = (*output)(current_sample.x, current_sample.y) + shade(*scene, ray, hit, max_depth);
+                Color out_color = shade(*scene, ray, hit, max_depth);
+				(*output)(current_sample.x, current_sample.y) = (*output)(current_sample.x, current_sample.y) + out_color;
 				
 				//std::cout << "after" << std::endl;
 			}
@@ -83,48 +85,18 @@ namespace FalconEye {
 
         const uint32_t width = opt.getWidth();
         const uint32_t height = opt.getHeight();
-        //const int max_depth = opt.getReflectionBounce();
         
-        static const int sample_per_pixels = 1;
-        //Sampler::Sample current_sample;
+        const int sample_per_pixels = opt.getSamplerPerPixels();
         
         Image output_image(width, height);
-        //BasicRandomSampler sampler(0, width, 0, height, sample_per_pixels);
-        
-		// generer l'origine et l'extremite du rayon
-		/*Orbiter camera = s.getOrbiter();
-		Point o = camera.position();
-		Point p;
-		Point e;
-		Vector dx, dy;
+
 		
-		camera.frame(width, height, 0, opt.getFov(), p, dx, dy);
-
-        while (sampler.getNextSample(current_sample))
-        {
-			e = p + current_sample.fx * dx + current_sample.fy * dy;
-
-			Ray ray = make_ray(o, e);
-			Hit hit;
-
-			// calculer les intersections
-			if (castRay(s, ray, hit)) {
-				//std::cout << "before x=" << current_sample.x << " y= " << current_sample.y << std::endl;
-				output_image(current_sample.x, current_sample.y) = output_image(current_sample.x, current_sample.y) + shade(s, ray, hit, max_depth);
-				
-				//std::cout << "after" << std::endl;
-			}
-		}*/
-		
-		static constexpr uint32_t imageSubDivision = 2;
+		static constexpr uint32_t imageSubDivision = 4;
 		static constexpr uint32_t nbJobs = imageSubDivision * imageSubDivision;
 		
-		
-		TThreadManager threadManager;
-		threadManager.SetFinishAllJobBeforeExiting(true);
-		threadManager.Init();
-		
+
 		Sampler* samplers[nbJobs];
+        RenderingJob_ptr jobs[nbJobs];
 		int startX = 0;
 		auto begin = std::chrono::high_resolution_clock::now();
 		for (uint32_t i = 0; i < imageSubDivision; ++i)
@@ -136,18 +108,32 @@ namespace FalconEye {
 				int endY = std::min(startY + height / imageSubDivision, height);
 				Sampler* newSampler = new BasicRandomSampler(startX, endX, startY, endY, sample_per_pixels);
 				samplers[i + j * imageSubDivision] = newSampler;
-				threadManager.AddJob(RenderingJob_ptr(new RenderingJob(&s, newSampler, &output_image, ro_to_use)));
+                RenderingJob_ptr newJob = RenderingJob_ptr(new RenderingJob(&s, newSampler, &output_image, ro_to_use));
+				ThreadingInterface::AddJob(newJob);
+                jobs[i + j * imageSubDivision] = newJob;
 				startY = endY;
 			}
 			startX = endX;
 		}
-		threadManager.ShutDown();
-		std::cout << "Averraging" << std::endl;
+        for (unsigned int i = 0; i < nbJobs; ++i)
+        {
+            if (jobs[i].get() != nullptr)//shouldn't happen but y'a know...
+            {
+                jobs[i]->WaitFinish();
+            }
+        }
+		std::cout << "Averaging" << std::endl;
 		for (int x = 0; x < width; ++x)
 		{
 			for (int y = 0; y < height; ++y)
 			{
-				output_image(x, y) = output_image(x, y) / sample_per_pixels;
+                Color out_color = output_image(x, y) / sample_per_pixels;
+                //output_image(x, y) = output_image(x, y) / sample_per_pixels;
+                /*out_color.r = std::sqrt(out_color.r / sample_per_pixels) / (255.0f);
+                out_color.g = std::sqrt(out_color.g / sample_per_pixels) / (255.0f);
+                out_color.b = std::sqrt(out_color.b / sample_per_pixels) / (255.0f);*/
+                out_color.a = 1.0f;
+                output_image(x, y) = out_color;
 			}
 		}
 		auto end = std::chrono::high_resolution_clock::now();
@@ -304,7 +290,7 @@ namespace FalconEye {
 		
 		//return directIlumination * hit_albedo;
 		Color indirectIlumination = Black();
-		static const uint32_t nbSample = 6;
+		static const uint32_t nbSample = 32;
 		
 		Vector Nt, Nb;
 		createCoordinateSystem(hit.n, Nt, Nb);
