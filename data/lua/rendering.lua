@@ -1,10 +1,25 @@
 
 local RenderingInterface_defaults = {
+    --scene render options
     width = 800,
     height = 600,
     fov = 60,
     reflection_bounce = 2,
     sample_per_pixels = 1,
+
+    --orbiter
+    center = Point(0, 0, 0),
+    distance = 5,
+
+    --lights
+    --attenuation parameters
+    constant = 1,
+    linear =  0, 
+    quadratic = 0,
+    --point light
+    position = Point(0, 0 , 0),
+    range = 100,
+    color = Color(1, 1, 1, 1),
 }
 
 local function make_scene_render_options(args)
@@ -32,9 +47,98 @@ if not arg_sample_per_pixels then
 	return SceneRenderOption(arg_width, arg_height, arg_fov, arg_reflection_bounce, arg_sample_per_pixels)
 end
 
+--lights
+local function make_attenuation_parameters(args)
+    local arg_constant = args.constant
+	local arg_linear = args.linear
+	local arg_quadratic = args.quadratic
+
+    if not arg_constant then 
+		arg_constant = RenderingInterface_defaults.constant
+	end
+	if not arg_linear then
+		arg_linear = RenderingInterface_defaults.linear
+	end
+	if not arg_quadratic then
+		arg_quadratic = RenderingInterface_defaults.quadratic
+	end
+
+    return AttenuationParameters(arg_constant, arg_linear, arg_quadratic)
+end
+
+local function make_attenuation_from_range(range)
+    return AttenuationParameters(1, 4.5/range, 75/(range*range))
+end
+
+local function make_point_light(args)
+    local arg_position = args.position
+	local arg_range = args.range
+	local arg_color = args.color
+    local arg_attenuation = args.attenuation
+
+    if not arg_position then 
+		arg_position = RenderingInterface_defaults.position
+	end
+	if not arg_range then
+		arg_range = RenderingInterface_defaults.range
+	end
+	if not arg_color then
+		arg_color = RenderingInterface_defaults.color
+	end
+    if not arg_attenuation then
+		arg_attenuation = make_attenuation_from_range(arg_range)
+	end
+
+    return PointLight(arg_position, arg_range, arg_color, arg_attenuation)
+end
+
+--orbiter
+local function make_orbiter(args)
+    local arg_center = args.center
+    local arg_distance = args.distance
+
+    if not arg_center then 
+		arg_center = RenderingInterface_defaults.center
+	end
+	if not arg_distance then
+		arg_distance = RenderingInterface_defaults.distance
+	end
+    
+    return Orbiter(arg_center, arg_distance)
+end
+
+--scene
+local function make_scene(args)
+    local arg_orbiter = args.orbiter
+    local arg_objects = args.objects
+    local arg_lights = args.lights
+    
+    if not arg_orbiter then 
+		arg_orbiter = make_orbiter{}
+	end
+
+    local scene = Scene(arg_orbiter)
+
+    if arg_objects then 
+        for i, obj in ipairs(arg_objects) do
+            scene:addObject(obj)
+        end
+	end
+	if arg_lights then
+		for i, ligth in ipairs(arg_lights) do
+            scene:addLight(ligth)
+        end
+	end
+    return scene
+end
 
 RenderingInterface = {
 	make_scene_render_options = make_scene_render_options,
+    make_attenuation_parameters = make_attenuation_parameters,
+    make_attenuation_from_range = make_attenuation_from_range,
+    make_point_light = make_point_light,
+    make_orbiter = make_orbiter,
+    make_scene = make_scene,
 }
 
 return RenderingInterface
