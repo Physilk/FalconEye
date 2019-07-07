@@ -1,14 +1,14 @@
 local Mat = require 'data/lua/material'
 
 local ObjectsInterface_defaults = {
-    material = Mat.make_material{albedo = Color(0.81, 0.81, 0.81, 1), specular_exponent = 16, reflectivity = 0, refraction = 1},
+    material = Mat.make_material{albedo = FalconEye.Color(0.81, 0.81, 0.81, 1), specular_exponent = 16, reflectivity = 0, refraction = 1},
 
-    position = Point(0, 0, 0),
-    normal = Vector(0, 1, 0),
+    position = FalconEye.Point(0, 0, 0),
+    normal = FalconEye.Vector(0, 1, 0),
 
     radius = 1,
 
-    transform = Transform.Identity()
+    transform = FalconEye.Transform.Identity()
 }
 
 local function make_plan(args)
@@ -25,7 +25,7 @@ local function make_plan(args)
 	if not arg_material then
         arg_material = ObjectsInterface_defaults.material
 	end
-    return Plan(arg_position, arg_normal, arg_material)
+    return FalconEye.RayCasting.Plan(arg_position, arg_normal, arg_material)
 end
 
 local function make_sphere(args)
@@ -42,7 +42,7 @@ local function make_sphere(args)
 	if not arg_material then
         arg_material = ObjectsInterface_defaults.material
 	end
-    return Sphere(arg_position, arg_radius, arg_material)
+    return FalconEye.RayCasting.Sphere(arg_position, arg_radius, arg_material)
 end
 
 local function make_inverse_sphere(args)
@@ -59,7 +59,7 @@ local function make_inverse_sphere(args)
 	if not arg_material then
         arg_material = ObjectsInterface_defaults.material
 	end
-    return InverseSphere(arg_position, arg_radius, arg_material) 
+    return FalconEye.RayCasting.InverseSphere(arg_position, arg_radius, arg_material) 
 end
 
 local function make_triangle(args)
@@ -80,7 +80,7 @@ local function make_triangle(args)
     if not arg_material then
         arg_material = ObjectsInterface_defaults.material
 	end
-    return Triangle(arg_v0, arg_v1, arg_v2, arg_material) 
+    return FalconEye.RayCasting.Triangle(arg_v0, arg_v1, arg_v2, arg_material) 
 end
 
 local function make_mesh_object(args)
@@ -97,7 +97,7 @@ local function make_mesh_object(args)
     if not arg_material then
         arg_material = ObjectsInterface_defaults.material
 	end
-    return MeshObject(arg_transform, arg_file_path, arg_material) 
+    return FalconEye.RayCasting.MeshObject(arg_transform, arg_file_path, arg_material) 
 end
 
 ObjectsInterface = {

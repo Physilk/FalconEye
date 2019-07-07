@@ -9,7 +9,7 @@ local MaterialInterface_sampler_arrays = {
 
 local function getConstantScalarSampler(cst)
 	if MaterialInterface_sampler_arrays.cst_scalar_samplers[cst] == nil then
-		MaterialInterface_sampler_arrays.cst_scalar_samplers[cst] = ConstantScalarSampler(cst)
+		MaterialInterface_sampler_arrays.cst_scalar_samplers[cst] = FalconEye.RayCasting.ConstantScalarSampler(cst)
 	end
 	return MaterialInterface_sampler_arrays.cst_scalar_samplers[cst]
 end
@@ -17,14 +17,14 @@ end
 local function getConstantColorSampler(color)
 	local index = colorToString(color)
 	if MaterialInterface_sampler_arrays.cst_color_samplers[index] == nil then
-		MaterialInterface_sampler_arrays.cst_color_samplers[index] = ConstantColorSampler(color)
+		MaterialInterface_sampler_arrays.cst_color_samplers[index] = FalconEye.RayCasting.ConstantColorSampler(color)
 	end
 	return MaterialInterface_sampler_arrays.cst_color_samplers[index]
 end
 
 local function getTextureColorSampler(texture_file_name)
 	if MaterialInterface_sampler_arrays.txtr_color_sampler[texture_file_name] == nil then
-		MaterialInterface_sampler_arrays.txtr_color_sampler[texture_file_name] = TextureColorSampler(texture_file_name)
+		MaterialInterface_sampler_arrays.txtr_color_sampler[texture_file_name] = FalconEye.RayCasting.TextureColorSampler(texture_file_name)
 	end
 	return MaterialInterface_sampler_arrays.txtr_color_sampler[texture_file_name]
 end
@@ -37,8 +37,8 @@ end
 --end
 
 local MaterialInterface_defaults = {
-	albedo_sampler = getConstantColorSampler(Color(0.75, 0.75, 0.75, 1.0)),
-	normal_sampler = NormalSampler(),
+	albedo_sampler = getConstantColorSampler(FalconEye.Color(0.75, 0.75, 0.75, 1.0)),
+	normal_sampler = FalconEye.RayCasting.NormalSampler(),
 	shininess_sampler = getConstantScalarSampler(16),
 	reflectivity_sampler = getConstantScalarSampler(0),
 	refraction_sampler = getConstantScalarSampler(1),
@@ -106,7 +106,7 @@ local function make_material(args)
 	if not arg_refraction then
 		arg_refraction = MaterialInterface_defaults.refraction_sampler
 	end
-	return Material(arg_color, NormalSampler(), arg_shininess, arg_reflectivity, arg_refraction)
+	return FalconEye.RayCasting.Material(arg_color, FalconEye.RayCasting.NormalSampler(), arg_shininess, arg_reflectivity, arg_refraction)
 end
 
 local function debug_nb_sampler()

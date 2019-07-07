@@ -8,7 +8,7 @@ local RenderingInterface_defaults = {
     sample_per_pixels = 1,
 
     --orbiter
-    center = Point(0, 0, 0),
+    center = FalconEye.Point(0, 0, 0),
     distance = 5,
 
     --lights
@@ -17,9 +17,9 @@ local RenderingInterface_defaults = {
     linear =  0, 
     quadratic = 0,
     --point light
-    position = Point(0, 0 , 0),
+    position = FalconEye.Point(0, 0 , 0),
     range = 100,
-    color = Color(1, 1, 1, 1),
+    color = FalconEye.Color(1, 1, 1, 1),
 }
 
 local function make_scene_render_options(args)
@@ -44,7 +44,7 @@ local function make_scene_render_options(args)
 if not arg_sample_per_pixels then
 		arg_refraction = RenderingInterface_defaults.sample_per_pixels
 	end
-	return SceneRenderOption(arg_width, arg_height, arg_fov, arg_reflection_bounce, arg_sample_per_pixels)
+	return FalconEye.RayCasting.SceneRenderOption(arg_width, arg_height, arg_fov, arg_reflection_bounce, arg_sample_per_pixels)
 end
 
 --lights
@@ -63,11 +63,11 @@ local function make_attenuation_parameters(args)
 		arg_quadratic = RenderingInterface_defaults.quadratic
 	end
 
-    return AttenuationParameters(arg_constant, arg_linear, arg_quadratic)
+    return FalconEye.RayCasting.AttenuationParameters(arg_constant, arg_linear, arg_quadratic)
 end
 
 local function make_attenuation_from_range(range)
-    return AttenuationParameters(1, 4.5/range, 75/(range*range))
+    return FalconEye.RayCasting.AttenuationParameters(1, 4.5/range, 75/(range*range))
 end
 
 local function make_point_light(args)
@@ -89,7 +89,7 @@ local function make_point_light(args)
 		arg_attenuation = make_attenuation_from_range(arg_range)
 	end
 
-    return PointLight(arg_position, arg_range, arg_color, arg_attenuation)
+    return FalconEye.RayCasting.PointLight(arg_position, arg_range, arg_color, arg_attenuation)
 end
 
 --orbiter
@@ -104,7 +104,7 @@ local function make_orbiter(args)
 		arg_distance = RenderingInterface_defaults.distance
 	end
     
-    return Orbiter(arg_center, arg_distance)
+    return FalconEye.Orbiter(arg_center, arg_distance)
 end
 
 --scene
@@ -117,7 +117,7 @@ local function make_scene(args)
 		arg_orbiter = make_orbiter{}
 	end
 
-    local scene = Scene(arg_orbiter)
+    local scene = FalconEye.RayCasting.Scene(arg_orbiter)
 
     if arg_objects then 
         for i, obj in ipairs(arg_objects) do

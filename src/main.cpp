@@ -7,9 +7,15 @@ using namespace FalconEye;
 
 int main( int argc, char **argv )
 {
-
-    FalconEye::LuaContext luaContext("data/lua/config.lua");
-    luaContext.runMainScript();
+	try
+	{
+		FalconEye::LuaContext luaContext("data/lua/config.lua");
+		luaContext.runMainScript();
+	}
+	catch (std::exception* e)
+	{
+		std::cerr << e->what();
+	}
     
     return 0;
 }

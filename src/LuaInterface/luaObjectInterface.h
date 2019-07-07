@@ -24,15 +24,19 @@ using std::stringstream;
 #define LUA_BIND_CONSTRUCTOR_SP(CLASS, ...) .addConstructor(LUA_SP(std::shared_ptr<CLASS>), LUA_ARGS(__VA_ARGS__))
 //#define LUA_BING_FACTORY(...) .addFactory([](Color c, float s, float r, float i) {return std::shared_ptr<Material>(new Material(c, s, r, i)); })
 
-#define LUA_INTERNAL_START_BIND_CLASS(CLASS) LuaIntf::LuaBinding(L).beginClass<CLASS>(#CLASS)
-#define LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER) LuaIntf::LuaBinding(L).beginExtendClass<CLASS, SUPER>(#CLASS)
+#define LUA_INTERNAL_START_BIND_CLASS(CLASS) Parent.beginClass<CLASS>(#CLASS)
+#define LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER) Parent.beginExtendClass<CLASS, SUPER>(#CLASS)
 
-#define LUA_BEGIN_BIND_METHODS(CLASS) static inline void LUA_BINDING_METHOD_NAME (lua_State *L) { LUA_INTERNAL_START_BIND_CLASS(CLASS)
-#define LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(CLASS, SUPER) static inline void LUA_BINDING_METHOD_NAME (lua_State *L) { LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER)
+#define LUA_BEGIN_BIND_METHODS(CLASS) template <typename PARENT> static inline PARENT LUA_BINDING_METHOD_NAME (PARENT Parent) { return LUA_INTERNAL_START_BIND_CLASS(CLASS)
+#define LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(CLASS, SUPER) template <typename PARENT> static inline PARENT LUA_BINDING_METHOD_NAME (PARENT Parent) { return LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER)
 
-#define LUA_BIND_CLASS(CLASS, LUA_STATE) CLASS::LUA_BINDING_METHOD_NAME (LUA_STATE);
+#define LUA_BIND_CLASS(CLASS, PARENT) CLASS::LUA_BINDING_METHOD_NAME (PARENT)
 #define LUA_END_BIND_METHODS .endClass(); }
 
+//modules
+#define LUA_START_BIND_MODULE_BASE(MODULE, LUA_CONTEXT) LuaIntf::LuaBinding(LUA_CONTEXT).beginModule(#MODULE)
+#define LUA_START_BIND_MODULE(MODULE, PARENT) PARENT.beginModule(#MODULE)
+#define LUA_END_BIND_MODULE(MODULE) MODULE.endModule()
 //----------------------------------------------------------------------
 //-----------------ENUMS------------------------------------------------
 //----------------------------------------------------------------------

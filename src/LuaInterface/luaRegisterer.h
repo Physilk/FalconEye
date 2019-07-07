@@ -30,32 +30,39 @@ namespace FalconEye {
 
         static inline void RegisterClasses(lua_State *L)
         {
-            LUA_BIND_CLASS(Scene, L)
-                LUA_BIND_CLASS(SceneRenderOption, L)
-                LUA_BIND_CLASS(Material, L)
-                LUA_BIND_CLASS(Color, L)
-                LUA_BIND_CLASS(Point, L)
-                LUA_BIND_CLASS(Vector, L)
-                LUA_BIND_CLASS(vec2, L)
-                LUA_BIND_CLASS(vec3, L)
-                LUA_BIND_CLASS(vec4, L)
-                LUA_BIND_CLASS(Orbiter, L)
-                LUA_BIND_CLASS(Transform, L)
-                LUA_BIND_CLASS(SceneObject, L)
-                LUA_BIND_CLASS(Plan, L)
-                LUA_BIND_CLASS(Sphere, L)
-                LUA_BIND_CLASS(Triangle, L)
-                LUA_BIND_CLASS(MeshObject, L)
-                LUA_BIND_CLASS(InverseSphere, L)
-                LUA_BIND_CLASS(PointLight, L)
-                LUA_BIND_CLASS(PointLight::AttenuationParameters, L)
-                LUA_BIND_CLASS(ColorSampler, L)
-                LUA_BIND_CLASS(ScalarSampler, L)
-                LUA_BIND_CLASS(NormalSampler, L)
-                LUA_BIND_CLASS(ConstantColorSampler, L)
-                LUA_BIND_CLASS(TextureColorSampler, L)
-                LUA_BIND_CLASS(ConstantScalarSampler, L)
-                LUA_BIND_CLASS(TextureNormalSampler, L)
+			auto FalconEyeModule = LUA_START_BIND_MODULE_BASE(FalconEye, L);
+			LUA_BIND_CLASS(Color, FalconEyeModule);
+			LUA_BIND_CLASS(Point, FalconEyeModule);
+			LUA_BIND_CLASS(Vector, FalconEyeModule);
+			LUA_BIND_CLASS(vec2, FalconEyeModule);
+			LUA_BIND_CLASS(vec3, FalconEyeModule);
+			LUA_BIND_CLASS(vec4, FalconEyeModule);
+			LUA_BIND_CLASS(Orbiter, FalconEyeModule);
+			LUA_BIND_CLASS(Transform, FalconEyeModule);
+
+			auto RayCastingModule = LUA_START_BIND_MODULE(RayCasting, FalconEyeModule);
+			LUA_BIND_CLASS(Scene, RayCastingModule);
+			LUA_BIND_CLASS(SceneRenderOption, RayCastingModule);
+			LUA_BIND_CLASS(Material, RayCastingModule);
+			LUA_BIND_CLASS(SceneObject, RayCastingModule);
+			LUA_BIND_CLASS(Plan, RayCastingModule);
+			LUA_BIND_CLASS(Sphere, RayCastingModule);
+			LUA_BIND_CLASS(Triangle, RayCastingModule);
+			LUA_BIND_CLASS(MeshObject, RayCastingModule);
+			LUA_BIND_CLASS(InverseSphere, RayCastingModule);
+			LUA_BIND_CLASS(PointLight, RayCastingModule);
+			LUA_BIND_CLASS(PointLight::AttenuationParameters, RayCastingModule);
+			LUA_BIND_CLASS(ColorSampler, RayCastingModule);
+			LUA_BIND_CLASS(ScalarSampler, RayCastingModule);
+			LUA_BIND_CLASS(NormalSampler, RayCastingModule);
+			LUA_BIND_CLASS(ConstantColorSampler, RayCastingModule);
+			LUA_BIND_CLASS(TextureColorSampler, RayCastingModule);
+			LUA_BIND_CLASS(ConstantScalarSampler, RayCastingModule);
+			LUA_BIND_CLASS(TextureNormalSampler, RayCastingModule);
+			LUA_END_BIND_MODULE(RayCastingModule);
+
+			LUA_END_BIND_MODULE(FalconEyeModule);
+				//LUA_END_BIND_MODULE();
         }
         
         static inline void GenerateEnums(string generatedEnumFilePath = "./data/lua/generated/enums.lua")
