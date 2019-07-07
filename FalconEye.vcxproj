@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="debug|x64">
+      <Configuration>debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="debug|Win32">
+      <Configuration>debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release|x64">
+      <Configuration>release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release|Win32">
+      <Configuration>release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{16E97138-B8CC-4E40-A703-A10FD64452BA}</ProjectGuid>
+    <RootNamespace>FalconEye</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\x64\debug\</IntDir>
+    <TargetName>FalconEye</TargetName>
+    <TargetExt>.exe</TargetExt>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\x32\debug\</IntDir>
+    <TargetName>FalconEye</TargetName>
+    <TargetExt>.exe</TargetExt>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\x64\release\</IntDir>
+    <TargetName>FalconEye</TargetName>
+    <TargetExt>.exe</TargetExt>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\x32\release\</IntDir>
+    <TargetName>FalconEye</TargetName>
+    <TargetExt>.exe</TargetExt>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;extern\visual2012\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(OutDir)FalconEye.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEBUG;WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;extern\visual2012\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)FalconEye.exe</OutputFile>
+      <AdditionalLibraryDirectories>extern\visual2012\lib;dependencies\SDL2_image-2.0.1\lib\x64;dependencies\SDL2-2.0.8\lib\x64;dependencies\glew-2.1.0\lib\Release\x64;dependencies\lua;..\boost_1_66_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(OutDir)FalconEye.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEBUG;WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(OutDir)FalconEye.exe</OutputFile>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;extern\visual2012\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;extern\visual2012\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)FalconEye.exe</OutputFile>
+      <AdditionalLibraryDirectories>extern\visual2012\lib;dependencies\SDL2_image-2.0.1\lib\x64;dependencies\SDL2-2.0.8\lib\x64;dependencies\glew-2.1.0\lib\Release\x64;dependencies\lua;..\boost_1_66_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NVWIDGETS_EXPORTS;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;NOMINMAX;BOOST_FILESYSTEM_NO_DEPRECATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;src\gKit;src;dependencies\SDL2_image-2.0.1\include;dependencies\SDL2-2.0.8\include;dependencies\glew-2.1.0\include;dependencies\lua\include;..\boost_1_66_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <OutputFile>$(OutDir)FalconEye.exe</OutputFile>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\gKit\app.h" />
+    <ClInclude Include="src\gKit\app_time.h" />
+    <ClInclude Include="src\gKit\buffer.h" />
+    <ClInclude Include="src\gKit\color.h" />
+    <ClInclude Include="src\gKit\draw.h" />
+    <ClInclude Include="src\gKit\glcore.h" />
+    <ClInclude Include="src\gKit\image.h" />
+    <ClInclude Include="src\gKit\image_io.h" />
+    <ClInclude Include="src\gKit\mat.h" />
+    <ClInclude Include="src\gKit\mesh.h" />
+    <ClInclude Include="src\gKit\orbiter.h" />
+    <ClInclude Include="src\gKit\program.h" />
+    <ClInclude Include="src\gKit\text.h" />
+    <ClInclude Include="src\gKit\texture.h" />
+    <ClInclude Include="src\gKit\uniforms.h" />
+    <ClInclude Include="src\gKit\vec.h" />
+    <ClInclude Include="src\gKit\wavefront.h" />
+    <ClInclude Include="src\gKit\widgets.h" />
+    <ClInclude Include="src\gKit\window.h" />
+    <ClInclude Include="src\includes.h" />
+    <ClInclude Include="src\Threading\JobBase.h" />
+    <ClInclude Include="src\Threading\JobQueue.h" />
+    <ClInclude Include="src\Threading\ThreadingInterface.h" />
+    <ClInclude Include="src\Threading\ThreadManager.h" />
+    <ClInclude Include="src\Threading\WorkerThreadRunnable.h" />
+    <ClInclude Include="src\LuaInterface\luaContext.h" />
+    <ClInclude Include="src\LuaInterface\luaObjectInterface.h" />
+    <ClInclude Include="src\LuaInterface\luaRegisterer.h" />
+    <ClInclude Include="src\LuaIntf\LuaCompat.h" />
+    <ClInclude Include="src\LuaIntf\LuaContext.h" />
+    <ClInclude Include="src\LuaIntf\LuaIntf.h" />
+    <ClInclude Include="src\LuaIntf\LuaRef.h" />
+    <ClInclude Include="src\LuaIntf\LuaState.h" />
+    <ClInclude Include="src\Raycasting\bbox.h" />
+    <ClInclude Include="src\Raycasting\bintree.h" />
+    <ClInclude Include="src\Raycasting\light.h" />
+    <ClInclude Include="src\Raycasting\material.h" />
+    <ClInclude Include="src\Raycasting\octree.h" />
+    <ClInclude Include="src\Raycasting\ray.h" />
+    <ClInclude Include="src\Raycasting\scene.h" />
+    <ClInclude Include="src\Raycasting\SceneObject.h" />
+    <ClInclude Include="src\Raycasting\sceneRenderer.h" />
+    <ClInclude Include="src\Rendering\gBuffer.h" />
+    <ClInclude Include="src\Utils\resourceManager.h" />
+    <ClInclude Include="src\Utils\tools.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\gKit\app.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\app_time.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\buffer.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\color.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\draw.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\image.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\image_io.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\mat.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\mesh.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\orbiter.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\program.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\text.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\texture.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\uniforms.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\vec.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\wavefront.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\widgets.cpp">
+    </ClCompile>
+    <ClCompile Include="src\gKit\window.cpp">
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Threading\JobBase.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Threading\JobQueue.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Threading\ThreadingInterface.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Threading\ThreadManager.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Threading\WorkerThreadRunnable.cpp">
+    </ClCompile>
+    <ClCompile Include="src\LuaInterface\luaContext.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\bbox.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\bintree.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\light.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\material.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\octree.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\ray.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\scene.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\SceneObject.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\sceneRenderer.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Rendering\gBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Utils\resourceManager.cpp">
+    </ClCompile>
+    <ClCompile Include="src\Utils\tools.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

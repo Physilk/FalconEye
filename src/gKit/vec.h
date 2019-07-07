@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 //#include "LuaIntf/LuaIntf.h"
 
 //! \addtogroup math

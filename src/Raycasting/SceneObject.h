@@ -5,10 +5,10 @@
 
 #include "gKit/vec.h"
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 #include "material.h"
 #include "ray.h"
-#include "resourceManager.h"
+#include "Utils/resourceManager.h"
 
 using std::vector;
 using LuaIntf::_def;

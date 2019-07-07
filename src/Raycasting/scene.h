@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 #include "orbiter.h"
 #include "ray.h"
 #include "SceneObject.h"

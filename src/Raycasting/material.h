@@ -5,9 +5,9 @@
 #include <map>
 #include <memory>
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 #include "ray.h"
-#include "resourceManager.h"
+#include "Utils/resourceManager.h"
 #include "vec.h"
 
 using LuaIntf::_opt;

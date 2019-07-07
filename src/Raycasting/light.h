@@ -5,7 +5,7 @@
 #include "gKit/color.h"
 #include "gKit/vec.h"
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 
 namespace FalconEye {
 

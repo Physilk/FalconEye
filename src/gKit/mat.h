@@ -2,7 +2,7 @@
 #pragma once
 #include "vec.h"
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 
 //! \addtogroup math manipulations de points, vecteur, matrices, transformations
 ///@{

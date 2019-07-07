@@ -4,11 +4,11 @@
 #include <random>
 #include <chrono>
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 #include "gKit/image.h"
 #include "gKit/vec.h"
 
-#include "ThreadingInterface.h"
+#include "Threading/ThreadingInterface.h"
 #include "Threading/JobBase.h"
 
 using ::Threading::TJobBase;

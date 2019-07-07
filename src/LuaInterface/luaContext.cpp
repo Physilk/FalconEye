@@ -4,7 +4,7 @@
 #include <boost/filesystem.hpp>
 #include <vector>
 
-#include "sceneRenderer.h"
+#include "Raycasting/sceneRenderer.h"
 
 using std::vector;
 using std::string;

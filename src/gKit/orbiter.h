@@ -5,7 +5,7 @@
 #include "vec.h"
 #include "mat.h"
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 //! \addtogroup objet3D
 ///@{
 

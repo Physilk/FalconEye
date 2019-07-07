@@ -2,7 +2,7 @@
 #ifndef _COLOR_H
 #define _COLOR_H
 
-#include "luaObjectInterface.h"
+#include "LuaInterface/luaObjectInterface.h"
 //! \addtogroup image
 ///@{
 

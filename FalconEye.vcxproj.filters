@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{809EDF8D-B4B4-824E-B056-D90D26DF29B3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gKit">
+      <UniqueIdentifier>{180483D6-4F19-3145-82EB-B0B6BE7F362A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Threading">
+      <UniqueIdentifier>{A8A93D96-3122-3D46-8011-5A6A4CAC8D5C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\LuaInterface">
+      <UniqueIdentifier>{DE3134FD-6A63-B246-9058-6E93A0F34173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\LuaIntf">
+      <UniqueIdentifier>{6BDE117E-1D43-6E4E-8078-4B2590147B47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Raycasting">
+      <UniqueIdentifier>{2B4CE9C2-672B-2548-B11F-0E13231E5D4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Rendering">
+      <UniqueIdentifier>{BE4F87CD-7FCA-F64A-9B3A-378FEA71A4FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{8DDD47D7-9F6B-8243-8BC9-877B22DFE09B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\gKit\app.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\app_time.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\buffer.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\color.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\draw.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\glcore.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\image.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\image_io.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\mat.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\mesh.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\orbiter.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\program.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\text.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\texture.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\uniforms.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\vec.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\wavefront.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\widgets.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gKit\window.h">
+      <Filter>src\gKit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\includes.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Threading\JobBase.h">
+      <Filter>src\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Threading\JobQueue.h">
+      <Filter>src\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Threading\ThreadingInterface.h">
+      <Filter>src\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Threading\ThreadManager.h">
+      <Filter>src\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Threading\WorkerThreadRunnable.h">
+      <Filter>src\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaInterface\luaContext.h">
+      <Filter>src\LuaInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaInterface\luaObjectInterface.h">
+      <Filter>src\LuaInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaInterface\luaRegisterer.h">
+      <Filter>src\LuaInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaIntf\LuaCompat.h">
+      <Filter>src\LuaIntf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaIntf\LuaContext.h">
+      <Filter>src\LuaIntf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaIntf\LuaIntf.h">
+      <Filter>src\LuaIntf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaIntf\LuaRef.h">
+      <Filter>src\LuaIntf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaIntf\LuaState.h">
+      <Filter>src\LuaIntf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\bbox.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\bintree.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\light.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\material.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\octree.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\ray.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\scene.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\SceneObject.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Raycasting\sceneRenderer.h">
+      <Filter>src\Raycasting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\gBuffer.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\resourceManager.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\tools.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\gKit\app.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\app_time.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\buffer.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\color.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\draw.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\image.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\image_io.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\mat.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\mesh.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\orbiter.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\program.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\text.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\texture.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\uniforms.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\vec.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\wavefront.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\widgets.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gKit\window.cpp">
+      <Filter>src\gKit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Threading\JobBase.cpp">
+      <Filter>src\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Threading\JobQueue.cpp">
+      <Filter>src\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Threading\ThreadingInterface.cpp">
+      <Filter>src\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Threading\ThreadManager.cpp">
+      <Filter>src\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Threading\WorkerThreadRunnable.cpp">
+      <Filter>src\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LuaInterface\luaContext.cpp">
+      <Filter>src\LuaInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\bbox.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\bintree.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\light.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\material.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\octree.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\ray.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\scene.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\SceneObject.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Raycasting\sceneRenderer.cpp">
+      <Filter>src\Raycasting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\gBuffer.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\resourceManager.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\tools.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

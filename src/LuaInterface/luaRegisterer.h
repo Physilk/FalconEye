@@ -2,14 +2,14 @@
 
 #include "luaObjectInterface.h"
 
-#include "scene.h"
-#include "material.h"
+#include "Raycasting/scene.h"
+#include "Raycasting/material.h"
 #include "gKit/color.h"
 #include "gKit/vec.h"
 #include "gKit/orbiter.h"
 #include "gKit/mat.h"
-#include "SceneObject.h"
-#include "light.h"
+#include "Raycasting/SceneObject.h"
+#include "Raycasting/light.h"
 
 #include <iostream>
 #include <fstream>

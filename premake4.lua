@@ -85,6 +85,20 @@ solution "gKit2light"
 
 
  -- description des fichiers communs
+local src = "src/"
+local subDirs = { "gKit", "LuaInterface", "LuaIntf", "Raycasting", "Rendering", "Threading", "Utils"}
+
+local function generateProjectFiles(src, subDirs)
+    local ret = {}
+	for i,v in ipairs(subDirs) do 
+		table.insert(ret, src .. v .. "/*.cpp")
+		table.insert(ret, src .. v .. "/*.h")
+		table.insert(ret, src .. v .. "/*.hpp")
+	end
+
+	return ret
+end
+
 local gkit_files = { "src/gKit/*.cpp", "src/gKit/*.h" }
 local FalconEye_files = { "src/*.cpp", "src/*.h", "src/*.hpp"}
 local Threading_files = { "src/Threading/*.cpp", "src/Threading/*.h", "src/Threading/*.hpp"}
@@ -96,3 +110,4 @@ project("FalconEye")
 	files (gkit_files)
 	files (FalconEye_files)
 	files (Threading_files)
+	files (generateProjectFiles(src, subDirs))
