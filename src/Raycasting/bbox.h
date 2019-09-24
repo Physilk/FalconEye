@@ -2,7 +2,7 @@
 #define BBOX_HPP
 
 #include <iostream>
-
+#include <limits>
 #include "gKit/vec.h"
 
 #include "ray.h"

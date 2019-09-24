@@ -24,8 +24,8 @@ using std::stringstream;
 #define LUA_BIND_CONSTRUCTOR_SP(CLASS, ...) .addConstructor(LUA_SP(std::shared_ptr<CLASS>), LUA_ARGS(__VA_ARGS__))
 //#define LUA_BING_FACTORY(...) .addFactory([](Color c, float s, float r, float i) {return std::shared_ptr<Material>(new Material(c, s, r, i)); })
 
-#define LUA_INTERNAL_START_BIND_CLASS(CLASS) Parent.beginClass<CLASS>(#CLASS)
-#define LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER) Parent.beginExtendClass<CLASS, SUPER>(#CLASS)
+#define LUA_INTERNAL_START_BIND_CLASS(CLASS) (Parent.template beginClass<CLASS>(#CLASS))
+#define LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER) Parent.template beginExtendClass<CLASS, SUPER>(#CLASS)
 
 #define LUA_BEGIN_BIND_METHODS(CLASS) template <typename PARENT> static inline PARENT LUA_BINDING_METHOD_NAME (PARENT Parent) { return LUA_INTERNAL_START_BIND_CLASS(CLASS)
 #define LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(CLASS, SUPER) template <typename PARENT> static inline PARENT LUA_BINDING_METHOD_NAME (PARENT Parent) { return LUA_INTERNAL_START_BIND_CLASS_SUBCLASS_OF(CLASS, SUPER)

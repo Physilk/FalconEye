@@ -38,7 +38,7 @@ solution "gKit2light"
 		buildoptions { "-flto"}
 		linkoptions { "-flto"}
 		linkoptions { "-pthread"}
-		links { "GLEW", "SDL2", "SDL2_image", "GL", "pthread", "png", "lua53", "boost_filesystem", "boost_system"} -- TODO ajouter png aux autres config
+		links { "GLEW", "SDL2", "SDL2_image", "GL", "pthread", "lua", "boost_filesystem", "boost_system"} -- TODO ajouter png aux autres config
 		buildoptions { "-fopenmp" }
 		linkoptions { "-fopenmp" }
 		defines { "NB_THREADS=16" }
