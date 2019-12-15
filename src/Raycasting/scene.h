@@ -27,7 +27,7 @@ namespace FalconEye {
     class Scene {
     private:
         vector<SceneObject_ptr> objects;
-        vector<PointLight_ptr> lights;
+        vector<Light_ptr> lights;
 
         float shadow_coeficient = 0.2f;
 
@@ -51,10 +51,11 @@ namespace FalconEye {
         ~Scene();
         
         const BBoxBinTree* getObjects() const { return bboxBinTree; }
-        const vector<PointLight_ptr>& getPointLights() const { return lights; }
+        const vector<Light_ptr>& getLights() const { return lights; }
 
         void addObject(SceneObject_ptr o);
-        void addLight(PointLight_ptr l) { lights.push_back(l); }
+        void addLight(Light_ptr l) { lights.push_back(l); }
+        void addPointLight(PointLight_ptr l) { addLight(l); }
 
         void preProcess();
         void renderScene(const char *filename, SceneRenderOption_ptr opt = nullptr);

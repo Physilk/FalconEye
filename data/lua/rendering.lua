@@ -20,6 +20,9 @@ local RenderingInterface_defaults = {
     position = FalconEye.Point(0, 0 , 0),
     range = 100,
     color = FalconEye.Color(1, 1, 1, 1),
+    --sphere light
+    radius = 1,
+    arg_nbSamples = 64,
 }
 
 local function make_scene_render_options(args)
@@ -92,6 +95,37 @@ local function make_point_light(args)
     return FalconEye.RayCasting.PointLight(arg_position, arg_range, arg_color, arg_attenuation)
 end
 
+local function make_sphere_light(args)
+    local arg_position = args.position
+	local arg_range = args.range
+	local arg_radius = args.radius
+	local arg_nbSamples = args.nbSamples
+	local arg_color = args.color
+    local arg_attenuation = args.attenuation
+
+    if not arg_position then 
+		arg_position = RenderingInterface_defaults.position
+	end
+	if not arg_range then
+		arg_range = RenderingInterface_defaults.range
+	end
+	if not arg_radius then
+		arg_radius = RenderingInterface_defaults.radius
+	end
+	if not arg_nbSamples then
+		arg_nbSamples = RenderingInterface_defaults.arg_nbSamples
+	end
+	if not arg_color then
+		arg_color = RenderingInterface_defaults.color
+	end
+    if not arg_attenuation then
+		arg_attenuation = make_attenuation_from_range(arg_range)
+	end
+
+    return FalconEye.RayCasting.SphereLight(arg_position, arg_range, arg_radius, arg_nbSamples, arg_color, arg_attenuation)
+end
+
+
 --orbiter
 local function make_orbiter(args)
     local arg_center = args.center
@@ -137,6 +171,7 @@ RenderingInterface = {
     make_attenuation_parameters = make_attenuation_parameters,
     make_attenuation_from_range = make_attenuation_from_range,
     make_point_light = make_point_light,
+    make_sphere_light = make_sphere_light,
     make_orbiter = make_orbiter,
     make_scene = make_scene,
 }

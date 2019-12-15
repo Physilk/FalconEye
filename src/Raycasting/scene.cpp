@@ -235,8 +235,8 @@ namespace FalconEye {
         for (auto it = lights.begin(); it != lights.end(); ++it) {
             Color specColor = (*it)->getColor();
             //Color light_color = (*it)->getColor();
-            Point light_position = (*it)->position;
-            float light_range = (*it)->range;
+            Point light_position = (*it)->getPosition();
+            float light_range = (*it)->getRange();
 
             //std::cout << "light range=" << light_range << "\n";
 

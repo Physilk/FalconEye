@@ -38,10 +38,10 @@ local plan5Normal = FalconEye.Vector(0, 0, 1)
 local plan5 = Objects.make_plan{material = plan5Material, position = plan5Point, normal = plan5Normal}
 
 --the shpere
-local myMaterial = Mat.make_material{albedo = FalconEye.Color(0.81, 0.01, 0.81, 1), specular_exponent = 16, reflectivity = 0.03, refraction = 1}
+local myMaterial = Mat.make_material{albedo = FalconEye.Color(0.81, 0.81, 0.81, 1), specular_exponent = 16, reflectivity = 0.0, refraction = 1}
 --local myPoint = FalconEye.Point(0, -10, -20)
 local myPoint = FalconEye.Point(0, 0, 0)
-local mySphere = Objects.make_sphere{position = myPoint, radius = 5, material}--Sphere(myPoint, 5, myMaterial)
+local mySphere = Objects.make_sphere{position = myPoint, radius = 5, material = myMaterial}--Sphere(myPoint, 5, myMaterial)
 local myBoule = Objects.make_mesh_object{transform = FalconEye.Transform.compose_transform(FalconEye.Transform.Translation(FalconEye.Vector(0, -10, -20)), FalconEye.Transform.Scale(10, 10, 10)), file_path = meshBoulePath, material = myMaterial}
 
 --the shpere
@@ -50,16 +50,18 @@ local myInvSphere = Objects.make_inverse_sphere{position = myPoint, radius = 100
 
 --the light
 local lightColor = FalconEye.Color(0.95, 0.95, 0.95, 0)
-local lightPos = FalconEye.Point(5, 7, -40)
+local lightPos = FalconEye.Point(5, 7, 20)
 local lightRange = 1000
 local myPointLight = Rendering.make_point_light{ position = lightPos, range = lightRange, color = lightColor} --createPointLigth(lightPos, lightRange, lightColor)
 
-
+--the sphere light
+local lightRadius = 1;
+local mySphereLight = Rendering.make_sphere_light{ position = lightPos, range = lightRange, radius = lightRadius, nbSamples = 128, color = lightColor}
 
 local scene = Rendering.make_scene{
     orbiter = myOrbiter,
     objects = {plan1, plan2, plan3, plan4, plan5, mySphere, myInvSphere},
-    lights = {myPointLight}
+    lights = {mySphereLight}
 }
 
 local mat_tile_dark = Mat.make_material{albedo = FalconEye.Color(0.1, 0.1, 0.1, 1), specular_exponent = 32, reflectivity = 0.5, refraction = 1}

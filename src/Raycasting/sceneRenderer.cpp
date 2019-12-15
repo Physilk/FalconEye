@@ -251,19 +251,19 @@ namespace FalconEye {
         // albedo component
         if (hit_transparency < 1.0f)
         {
-			const vector<PointLight_ptr>& lights = scene.getPointLights();
+			auto lights = scene.getLights();
 			lightAmt = Black();
 			specularColor = Black(); 
 			Point shadowPointOrig = (dot(ray.direction, hit.n) < 0) ? 
 				hit.p + hit.n * delta : 
 				hit.p - hit.n * delta; 
 
-			for (auto light : lights) { 
+			/*for (auto light : lights) { 
 				//std::cout << "a light\n";
-				Vector lightDir = light->position - hit.p; 
+				Vector lightDir = light->getPosition() - hit.p; 
 				// square of the distance between hitPoint and the light
 				float lightDistance2 = dot(lightDir, lightDir);
-				if (light->range * light->range <= lightDistance2)
+				if (light->getRange() * light->getRange() <= lightDistance2)
 				{
 					//std::cout << "out of range\n";
 					continue;
@@ -279,7 +279,27 @@ namespace FalconEye {
 				lightAmt = lightAmt + (1 - inShadow) * light_color * LdotN; 
 				Vector reflectionDirection = Tools::reflect(-lightDir, hit.n); 
 				specularColor = specularColor + std::pow(std::max(0.f, -dot(reflectionDirection, ray.direction)), hit_shininess) * light_color;
-			} 
+			} */
+			for (auto light : lights) { 
+				//std::cout << "a light\n";
+				Vector lightDir = light->getPosition() - hit.p; 
+				// square of the distance between hitPoint and the light
+				float lightDistance2 = dot(lightDir, lightDir);
+				if (light->getRange() * light->getRange() <= lightDistance2)
+				{
+					//std::cout << "out of range\n";
+					continue;
+				}
+				lightDir = normalize(lightDir); 
+				float LdotN = std::max(0.f, dot(lightDir, hit.n)); 
+				Color light_color;
+				float inShadow = light->ShadePoint(scene, shadowPointOrig, light_color);
+				
+				//std::cout << "inShadow: " << inShadow << " LdotN: " << LdotN << '\n';
+				lightAmt = lightAmt + (1 - inShadow) * light_color * LdotN; 
+				Vector reflectionDirection = Tools::reflect(-lightDir, hit.n); 
+				specularColor = specularColor + std::pow(std::max(0.f, -dot(reflectionDirection, ray.direction)), hit_shininess) * light_color;
+			}
 			//albedoColor = lightAmt * hit_albedo * 0.8f/*kd*/ + specularColor * 0.2f /*Ks*/; 
 			directIlumination = lightAmt * 0.8f/*kd*/ + specularColor * 0.2f /*Ks*/; 
 		}
@@ -310,7 +330,8 @@ namespace FalconEye {
 		}
 		indirectIlumination = indirectIlumination / (float)(nbSample);
 		
-		Color hitColor = (directIlumination + indirectIlumination) * hit_albedo / M_PI; 
+		//Color hitColor = ((directIlumination + indirectIlumination) * hit_albedo / M_PI);
+		Color hitColor = ((directIlumination + indirectIlumination) * hit_albedo / M_PI) * ( 1.0f - hit_reflectivity) + hit_reflectivity * reflectColor; 
 		//Color directPlusIndirect = (directIlumination / M_PI + 2 * indirectIlumination) * hit_albedo;
 		//ca fausse probablement pas mal de chose
 		//directPlusIndirect = (hit_reflectivity > 0.0f) ? (hit_reflectivity * reflectColor + (1 - hit_reflectivity) * directPlusIndirect) : directPlusIndirect;
