@@ -9,11 +9,10 @@
 using Threading::TThreadManager;
 
 namespace FalconEye {
-	namespace SceneRenderer {
 		
     SceneRenderOption SceneRenderOption::defaultRenderOptions = SceneRenderOption();
     
-    bool BasicRandomSampler::getNextSample(Sample &s)
+    bool SceneRenderer::BasicRandomSampler::getNextSample(Sample &s)
     {
 		if (current_sample > sample_per_pixels)
 		{
@@ -42,12 +41,12 @@ namespace FalconEye {
 		return true;
 	}
 	
-	int RenderingJob::VirtualExecute()
+	int SceneRenderer::RenderingJob::VirtualExecute()
 	{
 		const int max_depth = renderOptions->getReflectionBounce();
 		
 		// generer l'origine et l'extremite du rayon
-		Orbiter camera = scene->getOrbiter();
+		Orbiter camera = Context->SceneRef->getOrbiter();
 		Point o = camera.position();
 		Point p;
 		Point e;
@@ -65,9 +64,9 @@ namespace FalconEye {
 			Hit hit;
 
 			// calculer les intersections
-			if (castRay(*scene, ray, hit)) {
+			if (Context->RendererRef->castRay(ray, hit)) {
 				//std::cout << "before x=" << current_sample.x << " y= " << current_sample.y << std::endl;
-                Color out_color = shade(*scene, ray, hit, max_depth);
+                Color out_color = Context->RendererRef->shade(ray, hit, max_depth);
 				(*output)(current_sample.x, current_sample.y) = (*output)(current_sample.x, current_sample.y) + out_color;
 				
 				//std::cout << "after" << std::endl;
@@ -77,12 +76,19 @@ namespace FalconEye {
 		return 0;
 	}
 	
-	Image renderScene(const Scene& s, const SceneRenderOption_ptr& ro)
+	Image SceneRenderer::renderScene(const SceneRenderOption_ptr& ro)
 	{
 		std::cout << "starting rendering" << std::endl;
+		if (Context == nullptr)
+		{
+			std::cout << "null context use setRenderingContext before calling renderScene" << std::endl;
+			return Image();
+		}
+		const Scene& scene = *Context->SceneRef;
 		const SceneRenderOption* ro_to_use = (ro.get() == nullptr) ? &SceneRenderOption::defaultRenderOptions : ro.get();
         const SceneRenderOption& opt = *ro_to_use;
 
+		
         const uint32_t width = opt.getWidth();
         const uint32_t height = opt.getHeight();
         
@@ -108,7 +114,7 @@ namespace FalconEye {
 				int endY = std::min(startY + height / imageSubDivision, height);
 				Sampler* newSampler = new BasicRandomSampler(startX, endX, startY, endY, sample_per_pixels);
 				samplers[i + j * imageSubDivision] = newSampler;
-                RenderingJob_ptr newJob = RenderingJob_ptr(new RenderingJob(&s, newSampler, &output_image, ro_to_use));
+                RenderingJob_ptr newJob = RenderingJob_ptr(new RenderingJob(Context, newSampler, &output_image, ro_to_use));
 				ThreadingInterface::AddJob(newJob);
                 jobs[i + j * imageSubDivision] = newJob;
 				startY = endY;
@@ -150,12 +156,16 @@ namespace FalconEye {
 			}
 		}
 		
+		if (opt.getOutputFilename() != "")
+		{
+			write_image(output_image, opt.getOutputFilename().c_str());
+		}
 		return output_image;
 	}
 
-	bool castRay(const Scene& s, const Ray& r, Hit& h)
+	bool SceneRenderer::castRay(const Ray& r, Hit& h) const
 	{
-		const BBoxBinTree* objTree = s.getObjects();
+		const BBoxBinTree* objTree = Context->SceneRef->getObjects();
 		if (objTree == nullptr)
 		{
 			return false;
@@ -163,9 +173,9 @@ namespace FalconEye {
 		return objTree->intersect(r, h);
 	}
 	
-	bool castRay(const Scene& s, const Ray& r)
+	bool SceneRenderer::castRay(const Ray& r) const
 	{
-		const BBoxBinTree* objTree = s.getObjects();
+		const BBoxBinTree* objTree = Context->SceneRef->getObjects();
 		if (objTree == nullptr)
 		{
 			return false;
@@ -178,7 +188,7 @@ namespace FalconEye {
 	//generator.seed(0);
 	std::uniform_real_distribution<float> distribution(0, 1);
 		
-	Color shade(const Scene& scene, const Ray& ray, const Hit& hit, int allowed_child_ray_depth)
+	Color SceneRenderer::shade(const Ray& ray, const Hit& hit, int allowed_child_ray_depth) const
 	{
 		if (allowed_child_ray_depth <= 0)
 		{
@@ -215,8 +225,8 @@ namespace FalconEye {
             Hit reflectHit;
 
             //lancer du rayon
-            if (castRay(scene, reflectRay, reflectHit)) {
-                reflectColor = shade(scene, reflectRay, reflectHit, allowed_child_ray_depth - 1);
+            if (castRay(reflectRay, reflectHit)) {
+                reflectColor = shade(reflectRay, reflectHit, allowed_child_ray_depth - 1);
             }
 		}
 		
@@ -240,8 +250,8 @@ namespace FalconEye {
             if (refractionVector.x == 0 && refractionVector.y == 0 && refractionVector.y == 0) {
                 refractColor = hit_albedo;
             }
-            else if (castRay(scene, refractRay, refractHit)) {
-                refractColor = shade(scene, refractRay, refractHit, allowed_child_ray_depth - 1);
+            else if (castRay(refractRay, refractHit)) {
+                refractColor = shade(refractRay, refractHit, allowed_child_ray_depth - 1);
             }
             reflectAndRefractColor = f * refractColor + (1 - f) * reflectColor;
 		}
@@ -251,7 +261,7 @@ namespace FalconEye {
         // albedo component
         if (hit_transparency < 1.0f)
         {
-			auto lights = scene.getLights();
+			auto lights = Context->SceneRef->getLights();
 			lightAmt = Black();
 			specularColor = Black(); 
 			Point shadowPointOrig = (dot(ray.direction, hit.n) < 0) ? 
@@ -293,7 +303,7 @@ namespace FalconEye {
 				lightDir = normalize(lightDir); 
 				float LdotN = std::max(0.f, dot(lightDir, hit.n)); 
 				Color light_color;
-				float inShadow = light->ShadePoint(scene, shadowPointOrig, light_color);
+				float inShadow = light->ShadePoint(Context, shadowPointOrig, light_color);
 				
 				//std::cout << "inShadow: " << inShadow << " LdotN: " << LdotN << '\n';
 				lightAmt = lightAmt + (1 - inShadow) * light_color * LdotN; 
@@ -323,9 +333,9 @@ namespace FalconEye {
 			Vector sampleWorld = rotateToCoordinateSystem(sample, hit.n, Nt, Nb);
 			Ray undirectRay = Ray(hit.p + hit.n * delta, sampleWorld, ray.n);
 			Hit undirectHit;
-			if (castRay(scene, undirectRay, undirectHit))
+			if (castRay(undirectRay, undirectHit))
 			{
-				indirectIlumination = indirectIlumination + r1 * shade(scene, undirectRay, undirectHit, allowed_child_ray_depth - 1) / pdf;
+				indirectIlumination = indirectIlumination + r1 * shade(undirectRay, undirectHit, allowed_child_ray_depth - 1) / pdf;
 			}
 		}
 		indirectIlumination = indirectIlumination / (float)(nbSample);
@@ -338,7 +348,7 @@ namespace FalconEye {
 		return hitColor;
 	}
 
-	void createCoordinateSystem(const Vector& N, Vector& Nt, Vector& Nb)
+	void SceneRenderer::createCoordinateSystem(const Vector& N, Vector& Nt, Vector& Nb)
 	{
 		if (std::fabs(N.x) > std::fabs(N.y))
 			Nt = Vector(N.z, 0, -N.x) / sqrtf(N.x * N.x + N.z * N.z);
@@ -347,7 +357,7 @@ namespace FalconEye {
 		Nb = cross(N, Nt);
 	}
 	
-	Vector uniformSampleHemisphere(const float &r1, const float &r2)
+	Vector SceneRenderer::uniformSampleHemisphere(const float &r1, const float &r2)
 	{
 		// cos(theta) = r1 = y
 		// cos^2(theta) + sin^2(theta) = 1 -> sin(theta) = srtf(1 - cos^2(theta))
@@ -358,7 +368,7 @@ namespace FalconEye {
 		return Vector(x, r1, z);
 	} 
 	
-	Vector rotateToCoordinateSystem(const Vector& v, const Vector& N, const Vector& Nt, const Vector& Nb)
+	Vector SceneRenderer::rotateToCoordinateSystem(const Vector& v, const Vector& N, const Vector& Nt, const Vector& Nb)
 	{
 		return Vector(
 			v.x * Nb.x + v.y * N.x + v.z * Nt.x,
@@ -366,8 +376,5 @@ namespace FalconEye {
 			v.x * Nb.z + v.y * N.z + v.z * Nt.z
 		); 
 	}
-
-    
-	} // end namespace SeneRenderer
 
 } // end namespace FalconEye

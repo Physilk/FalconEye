@@ -6,6 +6,7 @@ local RenderingInterface_defaults = {
     fov = 60,
     reflection_bounce = 2,
     sample_per_pixels = 1,
+	output_file,
 
     --orbiter
     center = FalconEye.Point(0, 0, 0),
@@ -22,7 +23,7 @@ local RenderingInterface_defaults = {
     color = FalconEye.Color(1, 1, 1, 1),
     --sphere light
     radius = 1,
-    arg_nbSamples = 64,
+	arg_nbSamples = 64,
 }
 
 local function make_scene_render_options(args)
@@ -31,7 +32,8 @@ local function make_scene_render_options(args)
 	local arg_fov = args.fov
 	local arg_reflection_bounce = args.reflection_bounce
     local arg_sample_per_pixels = args.sample_per_pixels
-	
+	local arg_output_file = args.output_file
+
 	if not arg_width then 
 		arg_color = RenderingInterface_defaults.width
 	end
@@ -44,10 +46,13 @@ local function make_scene_render_options(args)
 	if not arg_reflection_bounce then
 		arg_refraction = RenderingInterface_defaults.reflection_bounce
 	end
-if not arg_sample_per_pixels then
+	if not arg_sample_per_pixels then
 		arg_refraction = RenderingInterface_defaults.sample_per_pixels
 	end
-	return FalconEye.RayCasting.SceneRenderOption(arg_width, arg_height, arg_fov, arg_reflection_bounce, arg_sample_per_pixels)
+	if not arg_output_file then
+		arg_output_file = RenderingInterface_defaults.output_file
+	end
+	return FalconEye.RayCasting.SceneRenderOption(arg_width, arg_height, arg_fov, arg_reflection_bounce, arg_sample_per_pixels, arg_output_file)
 end
 
 --lights

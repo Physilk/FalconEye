@@ -2,8 +2,8 @@
 #include <math.h>
 #include <cstdlib>
 
-#include "light.h"
 #include "sceneRenderer.h"
+#include "light.h"
 #include "ray.h"
 
 namespace FalconEye {
@@ -20,7 +20,7 @@ namespace FalconEye {
         return ret;
     }
     
-    float PointLight::ShadePoint(const Scene& scene, const Point& point, Color& outColor) const
+    float PointLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
     {		
 		Vector lightDir = this->getPosition() - point; 
 		// square of the distance between hitPoint and the light
@@ -28,7 +28,7 @@ namespace FalconEye {
 		lightDir = normalize(lightDir); 
 		Ray shadowRay = Ray(point, lightDir);
 		Hit shadowHit;
-		bool bShadowHit = SceneRenderer::castRay(scene, shadowRay, shadowHit);
+		bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
 		float inShadow = (bShadowHit && shadowHit.t * shadowHit.t < lightDistance2) ? 1.0f : 0.0f;
 		//std::cout << "shadowHit.t: " << shadowHit.t * shadowHit.t << " dist: " <<  lightDistance2 << "\n";
 		outColor = this->attenuation(point);
@@ -40,7 +40,7 @@ namespace FalconEye {
 		return (random_engine() / (std::default_random_engine::max() + 1.0)) * (max - min) + min;
 	}
 
-	float SphereLight::ShadePoint(const Scene& scene, const Point& point, Color& outColor) const
+	float SphereLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
     {		
 		float inShadowSum = 0.0f;
 		
@@ -51,7 +51,7 @@ namespace FalconEye {
 			lightDir = normalize(lightDir);
 			Ray shadowRay = Ray(point, lightDir);
 			Hit shadowHit;
-			bool bShadowHit = SceneRenderer::castRay(scene, shadowRay, shadowHit);
+			bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
 			inShadowSum += (bShadowHit && shadowHit.t * shadowHit.t < lightDistance2) ? 1.0f : 0.0f;
 		}
 		

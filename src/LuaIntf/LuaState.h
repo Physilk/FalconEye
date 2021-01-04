@@ -300,7 +300,7 @@ public:
     void setAllocFunc(lua_Alloc func, void* userdata = nullptr) const
         { lua_setallocf(L, func, userdata);}
 
-    const lua_Number* version() const
+    lua_Number version() const
         { return lua_version(L); }
 
     void checkVersion() const
@@ -724,8 +724,8 @@ public:
     int resume(int num_args) const
         { return lua_resume(L, num_args); }
 #else
-    int resume(int num_args, lua_State* from = nullptr) const
-        { return lua_resume(L, from, num_args); }
+    int resume(int num_args, lua_State* from = nullptr, int* nres = nullptr) const
+        { return lua_resume(L, from, num_args, nres); }
 #endif
 
     int status() const

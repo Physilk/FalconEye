@@ -268,7 +268,7 @@ Context create_context( Window window, const int major, const int minor )
     Context context= SDL_GL_CreateContext(window);
     if(context == NULL)
     {
-        printf("[error] creating openGL context.\n");
+        printf("[error] creating openGL context: %s\n", SDL_GetError());
         return NULL;
     }
 

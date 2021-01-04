@@ -8,6 +8,7 @@
 #include "gKit/color.h"
 #include "gKit/vec.h"
 
+#include "Raycasting/renderingContext.h"
 #include "LuaInterface/luaObjectInterface.h"
 
 namespace FalconEye {
@@ -83,7 +84,7 @@ namespace FalconEye {
         void setNbSamples(unsigned int s) { NbSamples = s; }
         unsigned int getNbSamples() const { return NbSamples; }
         
-        virtual float ShadePoint(const Scene& scene, const Point& point, Color& outColor) const { outColor = Black(); return 1.0f; }
+        virtual float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const { outColor = Black(); return 1.0f; }
         virtual Color attenuation(const Point &p) const;
         
         LUA_BEGIN_BIND_METHODS(Light)
@@ -106,7 +107,7 @@ namespace FalconEye {
 
 		virtual ~PointLight() = default;
 
-		float ShadePoint(const Scene& scene, const Point& point, Color& outColor) const override;
+		float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const override;
 		//Color attenuation(const Point &p) const override;
 		
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(PointLight, Light)
@@ -135,7 +136,7 @@ namespace FalconEye {
         
         Point getRandomPointOnSphere(const Point& shadowPoint) const;
         
-		float ShadePoint(const Scene& scene, const Point& point, Color& outColor) const override;
+		float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const override;
 		//Color attenuation(const Point &p) const override;
 		
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(SphereLight, Light)

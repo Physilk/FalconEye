@@ -70,7 +70,7 @@ local mat_tile_light = Mat.make_material{albedo = FalconEye.Color(0.8, 0.8, 0.8,
 --createChessBoard(myScene, 5, 5, 5, mat_tile_dark, mat_tile_light);
 
 --Mat.debug_print()
-local sceneRenderOption = Rendering.make_scene_render_options{width = 400, height = 300, fov = 60, reflection_bounce = 2, sample_per_pixels = 1}
+local sceneRenderOption = Rendering.make_scene_render_options{width = 400, height = 300, fov = 60, reflection_bounce = 2, sample_per_pixels = 1, output_file = "output/test_plan"}
 --for i=0, 5, 1 do
 	--render the scene
     --myOrbiter:rotation(i, 0)
@@ -84,7 +84,12 @@ local sceneRenderOption = Rendering.make_scene_render_options{width = 400, heigh
     --mySphere.radius = radius
 	--myScene:renderScene("output/plan/test_plan".. i .. ".png", sceneRenderOption)
 --myScene:renderScene("output/plan/mini_test_plan.png", sceneRenderOption)
-scene:renderScene("output/plan/mini_test_plan.png", sceneRenderOption)
+--scene:renderScene("output/plan/mini_test_plan.png", sceneRenderOption)
 --end
 
+-- App
+local renderingApp = FalconEye.RayCasting.RaycastRenderingApp(900, 600, scene, 3, 3)
+renderingApp.renderOption = sceneRenderOption
+renderingApp:LuaRun()
+renderingApp:DebugRender()
 pauseUntilEnter()

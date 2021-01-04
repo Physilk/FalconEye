@@ -16,7 +16,7 @@ namespace FalconEye {
     // -----------------------------------------------------------------------
     // -----------------------------------------------------------------------
 
-    void Scene::renderScene(const char *filename, SceneRenderOption_ptr ro) {
+    /*void Scene::renderScene(const char *filename, SceneRenderOption_ptr ro) {
 
         if (bboxBinTree == nullptr)
             preProcess();
@@ -24,94 +24,7 @@ namespace FalconEye {
         Image output = SceneRenderer::renderScene(*this, ro);
         write_image(output, filename);
         return;
-        /*
-        const SceneRenderOption* ro_to_use = (ro.get() == nullptr) ? &SceneRenderOption::defaultRenderOptions : ro.get();
-        const SceneRenderOption& opt = *ro_to_use;
-
-        const int width = opt.getWidth();
-        const int height = opt.getHeight();
-        const size_t anti_aliasing = opt.getAntiAliasing();
-
-        const int aliased_width = width * anti_aliasing;
-        const int aliased_height = height * anti_aliasing;
-
-        const size_t sq_aliasing = anti_aliasing * anti_aliasing;
-
-        const size_t reflection_bounce = opt.getReflectionBounce();
-        std::cout << "rendering " << filename << "\n";
-        std::cout << "\twidth: " << width << "\n";
-        std::cout << "\theight: " << height << "\n";
-        std::cout << "\tfov: " << opt.getFov() << "\n";
-        std::cout << "\treflect bounce: " << opt.getReflectionBounce() << "\n";
-        std::cout << "\tanti_aliasing: " << anti_aliasing << "\n";
-
-
-
-        // creer l'image resultat
-        Image image = Image(width, height);
-        Image image_pre_aliasing = Image(aliased_width, aliased_height);
-
-        // generer l'origine et l'extremite du rayon
-        Point o = camera.position();
-        Point p;
-        Point e;
-        Vector dx, dy;
-
-        camera.frame(aliased_width, aliased_height, 0, opt.getFov(), p, dx, dy);
-
-        std::cout << "casting rays...\n";
-        auto begin = std::chrono::high_resolution_clock::now();
-#pragma omp parallel for schedule(dynamic,1) collapse(2) num_threads(NB_THREADS)
-        for (unsigned int y = 0; y < aliased_height; ++y)
-            for (unsigned int x = 0; x < aliased_width; ++x)
-            {
-
-                e = p + x * dx + y * dy;
-
-                Ray ray = make_ray(o, e);
-                Hit hit;
-
-                // calculer les intersections
-                if (intersect(ray, hit)) {
-
-                    if (anti_aliasing == 1) image(x, y) = processPixelColor(ray, hit, reflection_bounce);
-                    else image_pre_aliasing(x, y) = processPixelColor(ray, hit, reflection_bounce);
-                }
-            }
-
-        if (anti_aliasing != 1) {
-            std::cout << "averaging for anti-aliasing" << std::endl;
-            //on forme l'image finale
-#pragma omp parallel for schedule(dynamic,1) collapse(2) num_threads(NB_THREADS)
-            for (unsigned int y = 0; y < height; y++)
-                for (unsigned int x = 0; x < width; x++)
-                {
-                    size_t ax = x * anti_aliasing;
-                    size_t ay = y * anti_aliasing;
-                    size_t stop_at_x = ax + anti_aliasing;
-                    size_t stop_at_y = ay + anti_aliasing;
-                    Color c = Color(0, 0, 0);
-
-                    for (; ay < stop_at_y; ++ay)
-                        for (; ax < stop_at_x; ++ax) {
-                            c = c + image_pre_aliasing(ax, ay);
-                        }
-                    c = c / sq_aliasing;
-
-                    image(x, y) = c;
-                }
-            //pour debug
-            write_image(image_pre_aliasing, "prealiasing2.png");
-        }
-
-        auto end = std::chrono::high_resolution_clock::now();
-        auto dur = end - begin;
-        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-        std::cout << "render time: " << ms << "ms" << std::endl;
-
-        // enregistrer l'image
-        write_image(image, filename);*/
-    }
+    }*/
 
     // -----------------------------------------------------------------------
 

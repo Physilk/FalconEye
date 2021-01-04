@@ -12,8 +12,8 @@
 
 using std::vector;
 using LuaIntf::_def;
-using FalconEye::SceneRenderer::SceneRenderOption;
-using FalconEye::SceneRenderer::SceneRenderOption_ptr;
+using SceneRenderOption = FalconEye::SceneRenderer::SceneRenderOption;
+using SceneRenderOption_ptr = FalconEye::SceneRenderer::SceneRenderOption_ptr;
 
 namespace FalconEye {
 
@@ -58,7 +58,7 @@ namespace FalconEye {
         void addPointLight(PointLight_ptr l) { addLight(l); }
 
         void preProcess();
-        void renderScene(const char *filename, SceneRenderOption_ptr opt = nullptr);
+        //void renderScene(const char *filename, SceneRenderOption_ptr opt = nullptr);
 
         size_t getCount();
 
@@ -66,17 +66,19 @@ namespace FalconEye {
         void setOrbiter(Orbiter o) { camera = o; }
 
         LUA_BEGIN_BIND_METHODS(Scene)
-            LUA_BIND_CONSTRUCTOR_NOARGS
-            LUA_BIND_CONSTRUCTOR(Orbiter)
+            LUA_BIND_CONSTRUCTOR_SP_NOARGS(Scene)
+            LUA_BIND_CONSTRUCTOR_SP(Scene, Orbiter)
             LUA_BIND_METHOD(Scene, addObject)
             LUA_BIND_METHOD(Scene, addLight)
             LUA_BIND_METHOD(Scene, preProcess)
             //LUA_BIND_METHOD(Scene, renderScene)
-            LUA_BIND_METHOD_ARGS(Scene, renderScene, const char *, _opt<SceneRenderOption_ptr>)
+            //LUA_BIND_METHOD_ARGS(Scene, renderScene, const char *, _opt<SceneRenderOption_ptr>)
             LUA_BIND_PROPERTY(Scene, orbiter, getOrbiter, setOrbiter)
             LUA_END_BIND_METHODS
             
     };
+    
+    using Scene_ptr = std::shared_ptr<Scene>;
 } // end namespace FalconEye
 
 #endif

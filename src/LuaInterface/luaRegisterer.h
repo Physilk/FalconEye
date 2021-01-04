@@ -10,6 +10,7 @@
 #include "gKit/mat.h"
 #include "Raycasting/SceneObject.h"
 #include "Raycasting/light.h"
+#include "Raycasting/RaycastRenderingApp.h"
 
 #include <iostream>
 #include <fstream>
@@ -61,6 +62,9 @@ namespace FalconEye {
 			LUA_BIND_CLASS(TextureColorSampler, RayCastingModule);
 			LUA_BIND_CLASS(ConstantScalarSampler, RayCastingModule);
 			LUA_BIND_CLASS(TextureNormalSampler, RayCastingModule);
+			LUA_BIND_CLASS(RaycastRenderingApp, RayCastingModule);
+			//RaycastRenderingApp
+			LUA_BIND_CLASS(RaycastRenderingApp, RayCastingModule);
 			LUA_END_BIND_MODULE(RayCastingModule);
 
 			LUA_END_BIND_MODULE(FalconEyeModule);
