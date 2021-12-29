@@ -25,19 +25,24 @@ protected:
     TJobBase() : FStatus(EJobStatus::None) { FEndFuture = FEndPromise.get_future(); }
     TJobBase(const TJobBase &) = default;
     TJobBase(TJobBase &&) = default;
-    ~TJobBase() = default;
-    
+public:
+    virtual ~TJobBase() = default;
+
 private:
     atomic<EJobStatus>  FStatus;
     promise<void> FEndPromise;
     future<void> FEndFuture;
     
+    float FExecutionTime;
+
     virtual int VirtualExecute() = 0;
 public:
     
     EJobStatus Run();
     
     void WaitFinish();
+    EJobStatus GetStatus() const { return FStatus.load(); }
+    float GetExecutionTime() const { return FExecutionTime; }
 };
 
 typedef  std::shared_ptr<TJobBase> TJob_ptr;

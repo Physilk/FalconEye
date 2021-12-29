@@ -23,7 +23,9 @@ local RenderingInterface_defaults = {
     color = FalconEye.Color(1, 1, 1, 1),
     --sphere light
     radius = 1,
-	arg_nbSamples = 64,
+	arg_nbSamples = 8,
+	--directional light
+	direction = FalconEye.Vector(0, -1, 0)
 }
 
 local function make_scene_render_options(args)
@@ -130,6 +132,19 @@ local function make_sphere_light(args)
     return FalconEye.RayCasting.SphereLight(arg_position, arg_range, arg_radius, arg_nbSamples, arg_color, arg_attenuation)
 end
 
+local function make_directional_light(args)
+	local arg_direction = args.direction
+	local arg_color = args.color
+
+	if not arg_direction then 
+		arg_direction = RenderingInterface_defaults.direction
+	end
+	if not arg_color then
+		arg_color = RenderingInterface_defaults.color
+	end
+
+	return FalconEye.RayCasting.DirectionalLight(arg_color, arg_direction)
+end
 
 --orbiter
 local function make_orbiter(args)
@@ -177,6 +192,7 @@ RenderingInterface = {
     make_attenuation_from_range = make_attenuation_from_range,
     make_point_light = make_point_light,
     make_sphere_light = make_sphere_light,
+	make_directional_light = make_directional_light,
     make_orbiter = make_orbiter,
     make_scene = make_scene,
 }

@@ -50,7 +50,7 @@ namespace FalconEye {
 				, height(h)
 				, fov(f)
 				, reflection_bounce(b)
-				, sample_per_pixels(spp)
+				, sample_per_pixels(spp > 0 ? spp : 1)
 				, outputFilename(inOutputFilename)
 			{}
 
@@ -58,7 +58,7 @@ namespace FalconEye {
 			void setHeight(size_t h) { height = h; }
 			void setFov(float f) { fov = f; }
 			void setReflectionBounce(size_t r) { reflection_bounce = r; }
-			void setSamplerPerPixels(size_t spp) { sample_per_pixels = spp; }
+			void setSamplerPerPixels(size_t spp) { sample_per_pixels = spp > 0 ? spp : 1; }
 			void setOutputFileName(string o) { outputFilename = o; }
 
 			size_t getWidth() const { return width; }
@@ -148,16 +148,18 @@ namespace FalconEye {
 		//------------------------------------------------------------------
 		
 		class RenderingJob : public TJobBase {
+
+			friend class AveragingJob;
 		protected:
 			// reference counting on threads should work but data race can occure (but we don't care as long as we dont modify the context)
 			RenderingContext_ptr Context;
 			Sampler* sampler;
 			Image* output;
-			const SceneRenderOption* renderOptions;
+			SceneRenderOption renderOptions;
 		public:
 			RenderingJob() = delete;
 			RenderingJob(const RenderingJob&) = default;
-			RenderingJob(RenderingContext_ptr InContext, Sampler* smpl, Image* img, const SceneRenderOption* ro)
+			RenderingJob(RenderingContext_ptr InContext, Sampler* smpl, Image* img, SceneRenderOption ro)
 			: TJobBase()
 			, Context(InContext)
 			, sampler(smpl)
@@ -165,12 +167,39 @@ namespace FalconEye {
 			, renderOptions(ro)
 			{}
 			
+			virtual ~RenderingJob() { delete sampler; }
+
 		private:
 			virtual int VirtualExecute();
 		};
 		
 		using RenderingJob_ptr = std::shared_ptr<RenderingJob>;
 		
+		class AveragingJob : public TJobBase
+		{
+		protected:
+			RenderingContext_ptr Context;
+			std::vector<RenderingJob_ptr> RenderingJobs;
+			Image* output;
+			SceneRenderOption renderOptions;
+		public:
+			AveragingJob() = delete;
+			AveragingJob(const AveragingJob&) = default;
+			AveragingJob(RenderingContext_ptr InContext, Image* img, SceneRenderOption ro, const std::vector<RenderingJob_ptr>& inRenderingJobs)
+			: TJobBase()
+			, Context(InContext)
+			, RenderingJobs(inRenderingJobs)
+			, output(img)
+			, renderOptions(ro)
+			{}
+			
+			virtual ~AveragingJob() = default;
+
+		private:
+			virtual int VirtualExecute();
+		};
+
+		using AveragingJob_ptr = std::shared_ptr<AveragingJob>;
 		//------------------------------------------------------------------
 		//------------------------------------------------------------------
 	private:
@@ -182,7 +211,7 @@ namespace FalconEye {
 	public:
 		void SetContext(RenderingContext_ptr InContext) { Context = InContext; };
 
-		Image renderScene(const SceneRenderOption_ptr& ro = nullptr);
+		bool renderScene(Image* image, std::vector<Threading::TJob_ptr>& OutRenderingJobs, const SceneRenderOption_ptr& ro = nullptr);
 		bool castRay(const Ray& r, Hit& h) const;
 		bool castRay(const Ray& r) const;
 		Color shade(const Ray& r, const Hit& h, int allowed_child_ray_depth = 0) const;

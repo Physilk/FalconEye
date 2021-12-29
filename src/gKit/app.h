@@ -21,7 +21,7 @@ class App
 {
 public:
     //! constructeur, dimensions de la fenetre et version d'openGL.
-    App( const int width, const int height, const int major= 3, const int minor= 3 );
+    App( const int width, const int height, const int major= 3, const int minor= 3, bool bResizable = true );
     virtual ~App( );
 
     //! a deriver pour creer les objets openGL.
@@ -48,6 +48,9 @@ protected:
 
     unsigned int m_time;
     unsigned int m_delta;
+
+protected:
+    void resize_window(int width, int height);
 };
 
 

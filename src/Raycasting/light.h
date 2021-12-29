@@ -87,6 +87,9 @@ namespace FalconEye {
         virtual float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const { outColor = Black(); return 1.0f; }
         virtual Color attenuation(const Point &p) const;
         
+        virtual Vector getLightDirection(const Point& p) const { return getPosition() - p; }
+        virtual bool isLightInRange(const Point& p) const;
+
         LUA_BEGIN_BIND_METHODS(Light)
             //LUA_BIND_CONSTRUCTOR(Point, float, Color, PointLight::AttenuationParameters)
             .addFactory([](Point p, float r, Color c, AttenuationParameters at) {return std::shared_ptr<Light>(new Light(p, c, r, at, 1u)); })
@@ -151,9 +154,40 @@ namespace FalconEye {
             LUA_END_BIND_METHODS
     };
     
+    class DirectionalLight : public Light {
+    protected:
+        Vector direction;
+    public:
+        DirectionalLight(const Color& c, const Vector& inDirection)
+            : Light(Point(0,0,0), c, 0, AttenuationParameters(), 1u)
+            , direction(normalize(inDirection))
+        {}
+
+        DirectionalLight(const DirectionalLight &) = default;
+
+		virtual ~DirectionalLight() = default;
+
+		void setDirection(const Vector& d) { direction = d; }
+        const Vector& getDirection() const { return direction; }
+
+        virtual Vector getLightDirection(const Point& p) const { return direction * -1.0f; }
+        virtual bool isLightInRange(const Point& p) const { return true; }
+
+        virtual float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const;
+
+        LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(DirectionalLight, Light)
+            .addFactory([](const Color& c, const Vector& inDirection)
+            {
+				return std::shared_ptr<DirectionalLight>(new DirectionalLight(c, inDirection));
+			})
+            LUA_BIND_PROPERTY(DirectionalLight, direction, getDirection, setDirection)
+            LUA_END_BIND_METHODS
+    };
+
     using Light_ptr = std::shared_ptr<Light>;
     using PointLight_ptr = std::shared_ptr<PointLight>;
     using SphereLight_ptr = std::shared_ptr<SphereLight>;
+    using DirectionalLight_ptr = std::shared_ptr<DirectionalLight>;
 } // end namespace FalconEye
 
 #endif

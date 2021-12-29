@@ -38,12 +38,13 @@ namespace FalconEye {
 		s.fy = current_y + (r2 / std::default_random_engine::max());
 		
 		++current_sample;
+		//std::cout << "succefull next sample" << std::endl;
 		return true;
 	}
 	
 	int SceneRenderer::RenderingJob::VirtualExecute()
 	{
-		const int max_depth = renderOptions->getReflectionBounce();
+		const int max_depth = renderOptions.getReflectionBounce();
 		
 		// generer l'origine et l'extremite du rayon
 		Orbiter camera = Context->SceneRef->getOrbiter();
@@ -54,7 +55,7 @@ namespace FalconEye {
 		
 		Sampler::Sample current_sample;
 		
-		camera.frame(renderOptions->getWidth(), renderOptions->getHeight(), 0, renderOptions->getFov(), p, dx, dy);
+		camera.frame(renderOptions.getWidth(), renderOptions.getHeight(), 0, renderOptions.getFov(), p, dx, dy);
 		
 		while (sampler->getNextSample(current_sample))
         {
@@ -64,7 +65,8 @@ namespace FalconEye {
 			Hit hit;
 
 			// calculer les intersections
-			if (Context->RendererRef->castRay(ray, hit)) {
+			if (Context->RendererRef->castRay(ray, hit))
+			{
 				//std::cout << "before x=" << current_sample.x << " y= " << current_sample.y << std::endl;
                 Color out_color = Context->RendererRef->shade(ray, hit, max_depth);
 				(*output)(current_sample.x, current_sample.y) = (*output)(current_sample.x, current_sample.y) + out_color;
@@ -75,15 +77,51 @@ namespace FalconEye {
 		
 		return 0;
 	}
+
+	int SceneRenderer::AveragingJob::VirtualExecute()
+	{
+		for (unsigned int i = 0; i < RenderingJobs.size(); ++i)
+        {
+            RenderingJobs[i]->WaitFinish();
+        }
+		RenderingJobs.resize(0);
+
+		std::cout << "Averaging" << std::endl;
+		auto samples_per_pixel = renderOptions.getSamplerPerPixels();
+		for (int x = 0; x < (*output).width(); ++x)
+		{
+			for (int y = 0; y < (*output).height(); ++y)
+			{
+                Color out_color = (*output)(x, y) / samples_per_pixel;
+                out_color.a = 1.0f;
+                (*output)(x, y) = out_color;
+			}
+		}
+		
+		if (renderOptions.getOutputFilename() != "")
+		{
+			std::cout << "writing image to "<< renderOptions.getOutputFilename() << std::endl;
+			write_image(*output, renderOptions.getOutputFilename().c_str());
+		}
+
+		return 0;
+	}
 	
-	Image SceneRenderer::renderScene(const SceneRenderOption_ptr& ro)
+	bool SceneRenderer::renderScene(Image* image, std::vector<Threading::TJob_ptr>& OutRenderingJobs, const SceneRenderOption_ptr& ro)
 	{
 		std::cout << "starting rendering" << std::endl;
 		if (Context == nullptr)
 		{
-			std::cout << "null context use setRenderingContext before calling renderScene" << std::endl;
-			return Image();
+			std::cerr << "null context use setRenderingContext before calling renderScene" << std::endl;
+			return false;
 		}
+
+		if (image == nullptr)
+		{
+			std::cerr << "null image" << std::endl;
+			return false;
+		}
+
 		const Scene& scene = *Context->SceneRef;
 		const SceneRenderOption* ro_to_use = (ro.get() == nullptr) ? &SceneRenderOption::defaultRenderOptions : ro.get();
         const SceneRenderOption& opt = *ro_to_use;
@@ -92,11 +130,14 @@ namespace FalconEye {
         const uint32_t width = opt.getWidth();
         const uint32_t height = opt.getHeight();
         
-        const int sample_per_pixels = opt.getSamplerPerPixels();
-        
-        Image output_image(width, height);
+		if (image->width() != width || image->height() != height)
+		{
+			std::cerr << "wrong image dimention" << std::endl;
+			return false;
+		}
 
-		
+        const int sample_per_pixels = opt.getSamplerPerPixels();
+    		
 		static constexpr uint32_t imageSubDivision = 4;
 		static constexpr uint32_t nbJobs = imageSubDivision * imageSubDivision;
 		
@@ -104,7 +145,8 @@ namespace FalconEye {
 		Sampler* samplers[nbJobs];
         RenderingJob_ptr jobs[nbJobs];
 		int startX = 0;
-		auto begin = std::chrono::high_resolution_clock::now();
+		
+		std::vector<RenderingJob_ptr> renderingJobs_vector;
 		for (uint32_t i = 0; i < imageSubDivision; ++i)
 		{
 			int startY = 0;
@@ -114,53 +156,27 @@ namespace FalconEye {
 				int endY = std::min(startY + height / imageSubDivision, height);
 				Sampler* newSampler = new BasicRandomSampler(startX, endX, startY, endY, sample_per_pixels);
 				samplers[i + j * imageSubDivision] = newSampler;
-                RenderingJob_ptr newJob = RenderingJob_ptr(new RenderingJob(Context, newSampler, &output_image, ro_to_use));
+                RenderingJob_ptr newJob = RenderingJob_ptr(new RenderingJob(Context, newSampler, image, opt));
 				ThreadingInterface::AddJob(newJob);
+				//OutRenderingJobs.push_back(newJob);
+				renderingJobs_vector.push_back(newJob);
                 jobs[i + j * imageSubDivision] = newJob;
 				startY = endY;
 			}
 			startX = endX;
 		}
-        for (unsigned int i = 0; i < nbJobs; ++i)
-        {
-            if (jobs[i].get() != nullptr)//shouldn't happen but y'a know...
-            {
-                jobs[i]->WaitFinish();
-            }
-        }
-		std::cout << "Averaging" << std::endl;
-		for (int x = 0; x < width; ++x)
-		{
-			for (int y = 0; y < height; ++y)
-			{
-                Color out_color = output_image(x, y) / sample_per_pixels;
-                //output_image(x, y) = output_image(x, y) / sample_per_pixels;
-                /*out_color.r = std::sqrt(out_color.r / sample_per_pixels) / (255.0f);
-                out_color.g = std::sqrt(out_color.g / sample_per_pixels) / (255.0f);
-                out_color.b = std::sqrt(out_color.b / sample_per_pixels) / (255.0f);*/
-                out_color.a = 1.0f;
-                output_image(x, y) = out_color;
-			}
-		}
+
+		auto averagingJob = AveragingJob_ptr(new AveragingJob(Context, image, opt, renderingJobs_vector));
+		OutRenderingJobs.push_back(averagingJob);
+		ThreadingInterface::AddJob(averagingJob);
+
+		/*
 		auto end = std::chrono::high_resolution_clock::now();
         auto dur = end - begin;
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
         std::cout << "render time: " << ms << "ms" << std::endl;
-		
-		//cleaning
-		for (uint32_t i = 0; i < imageSubDivision; ++i)
-		{
-			for (uint32_t j = 0; j < imageSubDivision; ++j)
-			{
-				delete samplers[i + j * imageSubDivision];
-			}
-		}
-		
-		if (opt.getOutputFilename() != "")
-		{
-			write_image(output_image, opt.getOutputFilename().c_str());
-		}
-		return output_image;
+		*/
+		return true;
 	}
 
 	bool SceneRenderer::castRay(const Ray& r, Hit& h) const
@@ -292,10 +308,9 @@ namespace FalconEye {
 			} */
 			for (auto light : lights) { 
 				//std::cout << "a light\n";
-				Vector lightDir = light->getPosition() - hit.p; 
-				// square of the distance between hitPoint and the light
-				float lightDistance2 = dot(lightDir, lightDir);
-				if (light->getRange() * light->getRange() <= lightDistance2)
+				Vector lightDir = light->getLightDirection(hit.p); 
+				
+				if (!light->isLightInRange(hit.p))
 				{
 					//std::cout << "out of range\n";
 					continue;

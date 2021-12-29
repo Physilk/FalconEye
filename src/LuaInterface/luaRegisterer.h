@@ -54,6 +54,7 @@ namespace FalconEye {
 			LUA_BIND_CLASS(Light, RayCastingModule);
 			LUA_BIND_CLASS(PointLight, RayCastingModule);
 			LUA_BIND_CLASS(SphereLight, RayCastingModule);
+			LUA_BIND_CLASS(DirectionalLight, RayCastingModule);
 			LUA_BIND_CLASS(AttenuationParameters, RayCastingModule);
 			LUA_BIND_CLASS(ColorSampler, RayCastingModule);
 			LUA_BIND_CLASS(ScalarSampler, RayCastingModule);

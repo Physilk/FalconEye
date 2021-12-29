@@ -20,6 +20,13 @@ namespace FalconEye {
         return ret;
     }
     
+	bool Light::isLightInRange(const Point& p) const
+	{
+		Vector lightDir = getLightDirection(p);
+		float lightDistance2 = dot(lightDir, lightDir);
+		return getRange() * getRange() > lightDistance2;
+	}
+
     float PointLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
     {		
 		Vector lightDir = this->getPosition() - point; 
@@ -57,6 +64,22 @@ namespace FalconEye {
 		
 		outColor = this->attenuation(point);
 		return inShadowSum / NbSamples;
+		
+	}
+
+	float DirectionalLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
+    {		
+		static const float delta = 0.0001f;
+		Vector lightDir = direction * -1.0f;
+		// square of the distance between hitPoint and the light
+		
+		Ray shadowRay = Ray(point + direction * delta, lightDir);
+		Hit shadowHit;
+		bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
+		float inShadow = bShadowHit ? 1.0f : 0.0f;
+		//std::cout << "shadowHit.t: " << shadowHit.t * shadowHit.t << " dist: " <<  lightDistance2 << "\n";
+		outColor = color;
+		return inShadow;
 		
 	}
 	

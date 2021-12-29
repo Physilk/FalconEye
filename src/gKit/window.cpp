@@ -20,6 +20,16 @@ int window_height( )
     return height;
 }
 
+void resize_window(Window window, int new_width, int new_height)
+{
+    width= new_width;
+    height= new_height;
+    SDL_SetWindowSize(window, width, height);
+
+    // ... et le viewport opengl
+    glViewport(0, 0, width, height);
+}
+
 static std::vector<unsigned char> key_states;
 int key_state( const SDL_Keycode key )
 {
@@ -121,13 +131,7 @@ int events( Window window )
                 // redimensionner la fenetre...
                 if(event.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
-                    // conserve les dimensions de la fenetre
-                    width= event.window.data1;
-                    height= event.window.data2;
-                    SDL_SetWindowSize(window, width, height);
-
-                    // ... et le viewport opengl
-                    glViewport(0, 0, width, height);
+                    resize_window(window, event.window.data1, event.window.data2);
                 }
                 break;
 
@@ -183,7 +187,7 @@ int events( Window window )
 
 
 //! creation d'une fenetre pour l'application.
-Window create_window( const int w, const int h )
+Window create_window( const int w, const int h, bool bResizable )
 {
     // init sdl
     if(SDL_Init(SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE ) < 0)
@@ -198,7 +202,7 @@ Window create_window( const int w, const int h )
     // creer la fenetre
     Window window= SDL_CreateWindow("gKit",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+        SDL_WINDOW_OPENGL | (bResizable ? SDL_WINDOW_RESIZABLE : 0));
     if(window == NULL)
     {
         printf("[error] SDL_CreateWindow() failed.\n");

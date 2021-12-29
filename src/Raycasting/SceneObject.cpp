@@ -75,9 +75,13 @@ namespace FalconEye {
 
         if (t0 > t1) std::swap(t0, t1);
 
-        if (t0 < 0) {
+        if (t0 < 0)
+        {
             t0 = t1; // if t0 is negative, let's use t1 instead
-            if (t0 < 0) return false; // both t0 and t1 are negative
+            if (t0 < 0)
+            {
+                return false; // both t0 and t1 are negative
+            }
         }
 
         hit.t = t0;

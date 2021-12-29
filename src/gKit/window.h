@@ -17,7 +17,11 @@
 typedef SDL_Window *Window;
 
 //! creation d'une fenetre pour l'application.
-Window create_window( const int width, const int height );
+Window create_window( const int width, const int height, bool bResizable = true );
+
+//! redimentionnement de la fenetre
+void resize_window( Window w, int new_width, int new_height );
+
 //! destruction de la fenetre.
 void release_window( Window w );
 

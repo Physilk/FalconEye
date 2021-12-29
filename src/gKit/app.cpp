@@ -3,10 +3,10 @@
 #include "glcore.h"
 
 
-App::App( const int width, const int height, const int major, const int minor )
+App::App( const int width, const int height, const int major, const int minor, bool bResizable )
     : m_window(nullptr), m_context(nullptr)
 {
-    m_window= create_window(width, height);
+    m_window= create_window(width, height, bResizable);
     m_context= create_context(m_window, major, minor);
 }
 
@@ -55,4 +55,9 @@ float App::global_time( )
 float App::delta_time( )
 {
     return (float) m_delta;
+}
+
+void App::resize_window(int width, int height)
+{
+    ::resize_window(m_window, width, height);
 }
