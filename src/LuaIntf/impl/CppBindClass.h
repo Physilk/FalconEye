@@ -387,7 +387,7 @@ protected:
     void setMemberGetter(const char* name, const LuaRef& getter, const LuaRef& getter_const);
     void setMemberSetter(const char* name, const LuaRef& setter);
     void setMemberReadOnly(const char* name);
-    void setMemberFunction(const char* name, const LuaRef& proc, bool is_const, bool is_lua_overridable = false);
+    void setMemberFunction(const char* name, const LuaRef& proc, bool is_const);
 
 public:
     /**

@@ -37,7 +37,7 @@ namespace FalconEye {
             for (unsigned int i = 0; i < objects.size(); ++i) {
                 if (objects[i].get() == ignore)
                     continue;
-                if ((current_hit = objects[i]->intersect(ray, hit))) {
+                if (objects[i]->canIntersect(ray) && (current_hit = objects[i]->intersect(ray, hit))) {
                     if (!ever_hit || hit.t < closest_hit.t) {
                         closest_hit = hit;
                     }
@@ -59,7 +59,7 @@ namespace FalconEye {
             for (unsigned int i = 0; i < objects.size(); ++i) {
                 if (objects[i].get() == ignore)
                     continue;
-                if (objects[i]->intersect(ray, tmp_hit)) {
+                if (objects[i]->canIntersect(ray) && objects[i]->intersect(ray, tmp_hit)) {
                     return true;
                 }
             }

@@ -7,6 +7,12 @@
 namespace FalconEye {
     class SceneObject;
 
+    enum ERayType : uint8_t
+    {
+        Default,
+        Shadow
+    };
+
     struct Ray
     {
         Point origin;
@@ -15,12 +21,14 @@ namespace FalconEye {
         float n;
         const SceneObject* emmiter;
         
+        ERayType rayType = ERayType::Default;
+
         Ray() = default;
-        Ray(const Point& o, const Point& e, float i = 1, const SceneObject* obj = nullptr);
-        Ray(const Point& o, const Vector& v, float i = 1, const SceneObject* obj = nullptr);
+        Ray(const Point& o, const Point& e, float i = 1, ERayType t = ERayType::Default, const SceneObject* obj = nullptr);
+        Ray(const Point& o, const Vector& v, float i = 1, ERayType t = ERayType::Default, const SceneObject* obj = nullptr);
     };
 
-    Ray make_ray(const Point& o, const Point& e, float i = 1);
+    Ray make_ray(const Point& o, const Point& e, float i = 1); 
     Ray make_ray(const Point& o, const Vector& d, float i = 1);
 
     struct Hit

@@ -174,7 +174,7 @@ namespace FalconEye {
 
         
         for (size_t i = 0; i < infinite_objects.size(); ++i) {
-            if ((current_hit = infinite_objects[i]->intersect(ray, hit))) {
+            if (infinite_objects[i]->canIntersect(ray) && (current_hit = infinite_objects[i]->intersect(ray, hit))) {
                 if (!ever_hit || hit.t < closest_hit.t) {
                     closest_hit = hit;
                 }
@@ -208,7 +208,7 @@ namespace FalconEye {
         //node terminale
         if (g == nullptr && d == nullptr) {
             for (size_t i = 0; i < objects.size(); ++i) {
-                if ((current_hit = objects[i]->intersect(ray, hit))) {
+                if (objects[i]->canIntersect(ray) && (current_hit = objects[i]->intersect(ray, hit))) {
                     if (!ever_hit || hit.t < closest_hit.t) {
                         closest_hit = hit;
                     }

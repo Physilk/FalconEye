@@ -18,6 +18,8 @@ namespace FalconEye {
     class SceneObject {
     protected:
         Material_ptr material;
+        bool bCastShadow = true;
+        bool bReceiveShadow = true;
 
         SceneObject(const Material_ptr& mat) : material(mat) {}
         SceneObject(const SceneObject &) = default;
@@ -26,12 +28,12 @@ namespace FalconEye {
 
         //NE DOIT PAS ETRE UTILISE, MIT PUBLIC POUR LA COMPATIBILITE LUA
         SceneObject() : material(nullptr) {}
-        // /!\
+    
 
         virtual ~SceneObject() = default;
 
         virtual bool intersect(const Ray&, Hit&) const { return false; } // = 0;
-
+        virtual bool canIntersect(const Ray& ray) const { return !(!bCastShadow && ray.rayType == ERayType::Shadow); }
 
         virtual Point getCenter() const { return Point(); }//= 0;
         virtual Point getMin() const { return Point(); }//= 0;
@@ -42,8 +44,16 @@ namespace FalconEye {
         void setMaterial(const Material_ptr &m) { material = m; }
         const Material_ptr getMaterial() const { return material; }
 
+        void setCastShadow(bool inCastShadow) { bCastShadow = inCastShadow; }
+        bool getCastShadow() const { return bCastShadow; }
+
+        void setReceiveShadow(bool inReceiveShadow) { bReceiveShadow = inReceiveShadow; }
+        bool getReceiveShadow() const { return bReceiveShadow; }
+
         LUA_BEGIN_BIND_METHODS(SceneObject)
             LUA_BIND_CONSTRUCTOR_NOARGS
+            LUA_BIND_PROPERTY(SceneObject, bCastShadow, getCastShadow, setCastShadow)
+            LUA_BIND_PROPERTY(SceneObject, bReceiveShadow, getReceiveShadow, setReceiveShadow)
             LUA_END_BIND_METHODS
     };
 

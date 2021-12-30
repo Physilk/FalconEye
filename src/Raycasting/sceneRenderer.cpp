@@ -92,7 +92,7 @@ namespace FalconEye {
 		{
 			for (int y = 0; y < (*output).height(); ++y)
 			{
-                Color out_color = (*output)(x, y) / samples_per_pixel;
+                Color out_color = (*output)(x, y) / (samples_per_pixel);
                 out_color.a = 1.0f;
                 (*output)(x, y) = out_color;
 			}
@@ -142,7 +142,7 @@ namespace FalconEye {
 		static constexpr uint32_t nbJobs = imageSubDivision * imageSubDivision;
 		
 
-		Sampler* samplers[nbJobs];
+		//Sampler* samplers[nbJobs];
         RenderingJob_ptr jobs[nbJobs];
 		int startX = 0;
 		
@@ -155,7 +155,7 @@ namespace FalconEye {
 			{
 				int endY = std::min(startY + height / imageSubDivision, height);
 				Sampler* newSampler = new BasicRandomSampler(startX, endX, startY, endY, sample_per_pixels);
-				samplers[i + j * imageSubDivision] = newSampler;
+				//samplers[i + j * imageSubDivision] = newSampler;
                 RenderingJob_ptr newJob = RenderingJob_ptr(new RenderingJob(Context, newSampler, image, opt));
 				ThreadingInterface::AddJob(newJob);
 				//OutRenderingJobs.push_back(newJob);
@@ -225,13 +225,15 @@ namespace FalconEye {
         
         Color reflectColor = Black();
         Color reflectAndRefractColor = Black();
-        bool isReflective = false;
-        bool isTransparent = false;
+        //bool isReflective = false;
+        //bool isTransparent = false;
         
+		bool bReceivedShadow = hit.p_object->getCastShadow();
+
         // reflected component
         if (hit_transparency > 0 || hit_reflectivity > 0)
         {
-			isReflective = true;
+			//isReflective = true;
 			
 			Vector reflectionVector = Tools::reflect(hit.n, ray.direction);
             Ray reflectRay;
@@ -249,7 +251,7 @@ namespace FalconEye {
 		// refracted component
 		if (hit_transparency > 0)
 		{
-			isTransparent = true;
+			//isTransparent = true;
 			
 			Color refractColor = Black();
 			const float f = Tools::fresnelFactor(fresnel_factor_0, hit.n, ray.direction);
@@ -258,7 +260,7 @@ namespace FalconEye {
             Vector refractionVector = Tools::refract(hit.n, ray.direction, ray.n, n2);
 
             Point p = hit.p + delta * refractionVector;
-            Ray refractRay = Ray(p, refractionVector, n2, hit.p_object);
+            Ray refractRay = Ray(p, refractionVector, n2, ERayType::Default, hit.p_object);
 
             Hit refractHit;
 
@@ -320,6 +322,10 @@ namespace FalconEye {
 				Color light_color;
 				float inShadow = light->ShadePoint(Context, shadowPointOrig, light_color);
 				
+				if (!bReceivedShadow)
+				{
+					inShadow = 0.0f;
+				}
 				//std::cout << "inShadow: " << inShadow << " LdotN: " << LdotN << '\n';
 				lightAmt = lightAmt + (1 - inShadow) * light_color * LdotN; 
 				Vector reflectionDirection = Tools::reflect(-lightDir, hit.n); 

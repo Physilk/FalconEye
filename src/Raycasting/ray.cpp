@@ -2,20 +2,22 @@
 
 namespace FalconEye {
 	
-	Ray::Ray(const Point& o, const Point& e, float i, const SceneObject* obj)
+	Ray::Ray(const Point& o, const Point& e, float i, ERayType t, const SceneObject* obj)
 		: origin(o)
 		, direction()
 		, n(i)
 		, emmiter(obj)
+        , rayType(t)
 		{
 			direction = normalize(Vector(o, e));
 		}
         
-	Ray::Ray(const Point& o, const Vector& v, float i, const SceneObject* obj)
+	Ray::Ray(const Point& o, const Vector& v, float i, ERayType t, const SceneObject* obj)
 		: origin(o)
 		, direction(v)
 		, n(i)
 		, emmiter(obj)
+        , rayType(t)
 		{}
 			
     Ray make_ray(const Point& o, const Point& e, float i)

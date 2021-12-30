@@ -202,6 +202,8 @@ namespace FalconEye {
 		using AveragingJob_ptr = std::shared_ptr<AveragingJob>;
 		//------------------------------------------------------------------
 		//------------------------------------------------------------------
+
+
 	private:
 		RenderingContext_ptr Context = nullptr;
 

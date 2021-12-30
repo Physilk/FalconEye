@@ -10,6 +10,7 @@
 
 #include "Raycasting/renderingContext.h"
 #include "LuaInterface/luaObjectInterface.h"
+#include "Raycasting/ray.h"
 
 namespace FalconEye {
 
@@ -97,6 +98,9 @@ namespace FalconEye {
             LUA_BIND_PROPERTY(Light, range, getRange, setRange)
             LUA_BIND_PROPERTY(Light, color, getColor, setColor)
             LUA_END_BIND_METHODS
+
+    protected:
+        Ray make_shadow_ray(Point origin, Vector direction, float i = 1.0f) const { return Ray(origin, direction, i, ERayType::Shadow); }
     };
 
     class PointLight : public Light {

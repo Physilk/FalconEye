@@ -33,7 +33,7 @@ namespace FalconEye {
 		// square of the distance between hitPoint and the light
 		float lightDistance2 = length2(lightDir);
 		lightDir = normalize(lightDir); 
-		Ray shadowRay = Ray(point, lightDir);
+		Ray shadowRay = make_shadow_ray(point, lightDir);
 		Hit shadowHit;
 		bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
 		float inShadow = (bShadowHit && shadowHit.t * shadowHit.t < lightDistance2) ? 1.0f : 0.0f;
@@ -56,7 +56,7 @@ namespace FalconEye {
 			Vector lightDir = getRandomPointOnSphere(point) - point;
 			float lightDistance2 = length2(lightDir);
 			lightDir = normalize(lightDir);
-			Ray shadowRay = Ray(point, lightDir);
+			Ray shadowRay = make_shadow_ray(point, lightDir);
 			Hit shadowHit;
 			bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
 			inShadowSum += (bShadowHit && shadowHit.t * shadowHit.t < lightDistance2) ? 1.0f : 0.0f;
@@ -73,7 +73,7 @@ namespace FalconEye {
 		Vector lightDir = direction * -1.0f;
 		// square of the distance between hitPoint and the light
 		
-		Ray shadowRay = Ray(point + direction * delta, lightDir);
+		Ray shadowRay = make_shadow_ray(point + direction * delta, lightDir);
 		Hit shadowHit;
 		bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
 		float inShadow = bShadowHit ? 1.0f : 0.0f;
