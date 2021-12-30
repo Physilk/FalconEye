@@ -52,8 +52,8 @@ namespace FalconEye {
 
         LUA_BEGIN_BIND_METHODS(SceneObject)
             LUA_BIND_CONSTRUCTOR_NOARGS
-            LUA_BIND_PROPERTY(SceneObject, bCastShadow, getCastShadow, setCastShadow)
             LUA_BIND_PROPERTY(SceneObject, bReceiveShadow, getReceiveShadow, setReceiveShadow)
+            LUA_BIND_PROPERTY(SceneObject, bCastShadow, getCastShadow, setCastShadow)
             LUA_END_BIND_METHODS
     };
 

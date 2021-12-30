@@ -85,7 +85,7 @@ namespace FalconEye {
         void setNbSamples(unsigned int s) { NbSamples = s; }
         unsigned int getNbSamples() const { return NbSamples; }
         
-        virtual float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const { outColor = Black(); return 1.0f; }
+        virtual float ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const { outColor = Black(); return 1.0f; }
         virtual Color attenuation(const Point &p) const;
         
         virtual Vector getLightDirection(const Point& p) const { return getPosition() - p; }
@@ -101,6 +101,8 @@ namespace FalconEye {
 
     protected:
         Ray make_shadow_ray(Point origin, Vector direction, float i = 1.0f) const { return Ray(origin, direction, i, ERayType::Shadow); }
+        Point getDeltaPoint(const Hit& hit) const;
+        bool shouldIgnoreShadow(const Hit& hit) const;
     };
 
     class PointLight : public Light {
@@ -114,7 +116,7 @@ namespace FalconEye {
 
 		virtual ~PointLight() = default;
 
-		float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const override;
+		float ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const override;
 		//Color attenuation(const Point &p) const override;
 		
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(PointLight, Light)
@@ -141,9 +143,10 @@ namespace FalconEye {
 		void setRadius(float r) { radius = r; }
         float getRadius() const { return radius; }
         
+        virtual Vector getLightDirection(const Point& p) const override;
         Point getRandomPointOnSphere(const Point& shadowPoint) const;
         
-		float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const override;
+		float ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const override;
 		//Color attenuation(const Point &p) const override;
 		
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(SphereLight, Light)
@@ -174,10 +177,10 @@ namespace FalconEye {
 		void setDirection(const Vector& d) { direction = d; }
         const Vector& getDirection() const { return direction; }
 
-        virtual Vector getLightDirection(const Point& p) const { return direction * -1.0f; }
+        virtual Vector getLightDirection(const Point& p) const override { return direction * -1.0f; }
         virtual bool isLightInRange(const Point& p) const { return true; }
 
-        virtual float ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const;
+        float ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const override;
 
         LUA_BEGIN_BIND_METHODS_SUBCLASS_OF(DirectionalLight, Light)
             .addFactory([](const Color& c, const Vector& inDirection)

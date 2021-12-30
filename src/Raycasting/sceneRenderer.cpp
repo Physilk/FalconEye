@@ -227,8 +227,6 @@ namespace FalconEye {
         Color reflectAndRefractColor = Black();
         //bool isReflective = false;
         //bool isTransparent = false;
-        
-		bool bReceivedShadow = hit.p_object->getCastShadow();
 
         // reflected component
         if (hit_transparency > 0 || hit_reflectivity > 0)
@@ -317,15 +315,12 @@ namespace FalconEye {
 					//std::cout << "out of range\n";
 					continue;
 				}
+				
 				lightDir = normalize(lightDir); 
 				float LdotN = std::max(0.f, dot(lightDir, hit.n)); 
 				Color light_color;
-				float inShadow = light->ShadePoint(Context, shadowPointOrig, light_color);
+				float inShadow = light->ShadeHit(Context, hit, light_color);
 				
-				if (!bReceivedShadow)
-				{
-					inShadow = 0.0f;
-				}
 				//std::cout << "inShadow: " << inShadow << " LdotN: " << LdotN << '\n';
 				lightAmt = lightAmt + (1 - inShadow) * light_color * LdotN; 
 				Vector reflectionDirection = Tools::reflect(-lightDir, hit.n); 

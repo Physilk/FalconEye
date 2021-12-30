@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include "sceneRenderer.h"
+#include "SceneObject.h"
 #include "light.h"
 #include "ray.h"
 
@@ -27,17 +28,41 @@ namespace FalconEye {
 		return getRange() * getRange() > lightDistance2;
 	}
 
-    float PointLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
-    {		
-		Vector lightDir = this->getPosition() - point; 
+	Point Light::getDeltaPoint(const Hit& hit) const
+	{
+		static const float delta = 0.00001f;
+		Point p = hit.p;
+
+		return p + hit.n * delta;
+	}
+
+    bool Light::shouldIgnoreShadow(const Hit& hit) const
+	{
+		return hit.p_object == nullptr || !hit.p_object->getReceiveShadow();
+	}
+
+    float PointLight::ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const
+    {	
+		if (shouldIgnoreShadow(hit))
+		{
+			outColor = this->attenuation(hit.p);
+			return 0.0f;	
+		}
+
+		Point point = getDeltaPoint(hit);
+		Vector lightDir = getLightDirection(point);
+
+		float inShadow = 0.0f;
+	
 		// square of the distance between hitPoint and the light
 		float lightDistance2 = length2(lightDir);
-		lightDir = normalize(lightDir); 
+		lightDir = normalize(lightDir);
 		Ray shadowRay = make_shadow_ray(point, lightDir);
 		Hit shadowHit;
 		bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
-		float inShadow = (bShadowHit && shadowHit.t * shadowHit.t < lightDistance2) ? 1.0f : 0.0f;
+		inShadow = (bShadowHit && shadowHit.t * shadowHit.t < lightDistance2) ? 1.0f : 0.0f;
 		//std::cout << "shadowHit.t: " << shadowHit.t * shadowHit.t << " dist: " <<  lightDistance2 << "\n";
+		
 		outColor = this->attenuation(point);
 		return inShadow;
 	}
@@ -47,13 +72,25 @@ namespace FalconEye {
 		return (random_engine() / (std::default_random_engine::max() + 1.0)) * (max - min) + min;
 	}
 
-	float SphereLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
-    {		
+	Vector SphereLight::getLightDirection(const Point& p) const
+	{
+		return getRandomPointOnSphere(p) - p;
+	}
+
+	float SphereLight::ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const
+    {	
+		if (shouldIgnoreShadow(hit))
+		{
+			outColor = this->attenuation(hit.p);
+			return 0.0f;
+		}
+
 		float inShadowSum = 0.0f;
+		Point point = getDeltaPoint(hit);
 		
 		for (unsigned int i = 0; i < NbSamples; ++i)
 		{
-			Vector lightDir = getRandomPointOnSphere(point) - point;
+			Vector lightDir = getLightDirection(point);
 			float lightDistance2 = length2(lightDir);
 			lightDir = normalize(lightDir);
 			Ray shadowRay = make_shadow_ray(point, lightDir);
@@ -67,19 +104,23 @@ namespace FalconEye {
 		
 	}
 
-	float DirectionalLight::ShadePoint(RenderingContext_ptr Context, const Point& point, Color& outColor) const
-    {		
-		static const float delta = 0.0001f;
-		Vector lightDir = direction * -1.0f;
+	float DirectionalLight::ShadeHit(RenderingContext_ptr Context, const Hit& hit, Color& outColor) const
+    {
+		if (shouldIgnoreShadow(hit))
+		{
+			outColor = color;
+			return 0.0f;
+		}
+
+		Point point = getDeltaPoint(hit);
 		// square of the distance between hitPoint and the light
 		
-		Ray shadowRay = make_shadow_ray(point + direction * delta, lightDir);
+		Ray shadowRay = make_shadow_ray(point, getLightDirection(point));
 		Hit shadowHit;
 		bool bShadowHit = Context->RendererRef->castRay(shadowRay, shadowHit);
-		float inShadow = bShadowHit ? 1.0f : 0.0f;
 		//std::cout << "shadowHit.t: " << shadowHit.t * shadowHit.t << " dist: " <<  lightDistance2 << "\n";
 		outColor = color;
-		return inShadow;
+		return bShadowHit ? 1.0f : 0.0f;
 		
 	}
 	
