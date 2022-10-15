@@ -2,6 +2,9 @@
 #include <cstring> // memset
 #include <cstdio>
 
+namespace FalconEye
+{
+
 GBuffer::GBuffer()
 {
     Fbo = 0;
@@ -79,3 +82,5 @@ void GBuffer::SetReadBuffer(GBufferTextureType TextureType)
 {
     glReadBuffer(GL_COLOR_ATTACHMENT0 + TextureType);
 }
+
+} // end namespace FalconEye

@@ -12,6 +12,8 @@
 #include "Raycasting/light.h"
 #include "Raycasting/RaycastRenderingApp.h"
 
+#include "Rendering/DefferedShadingApp.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -67,6 +69,9 @@ namespace FalconEye {
 			//RaycastRenderingApp
 			LUA_BIND_CLASS(RaycastRenderingApp, RayCastingModule);
 			LUA_END_BIND_MODULE(RayCastingModule);
+
+			auto RealTimeRenderingModule = LUA_START_BIND_MODULE(RTR, FalconEyeModule);
+			LUA_BIND_CLASS(DefferedShadingApp, RealTimeRenderingModule);
 
 			LUA_END_BIND_MODULE(FalconEyeModule);
 				//LUA_END_BIND_MODULE();

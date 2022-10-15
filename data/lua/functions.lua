@@ -1,4 +1,10 @@
 
+function colorToString(c)
+  return "r=" .. c.r .. " g=" .. c.g .. " b=" .. c.b .. " a=" .. c.a 
+end
+
+local Objects = require 'data/lua/objects'
+
 function createChessBoard(scene, width, height, tile_size, material_1, material_2)
 	if tile_size == nil then
 		tile_size = 1
@@ -30,6 +36,48 @@ function createChessBoard(scene, width, height, tile_size, material_1, material_
     end
 end
 
+function createMontain(min, max, subdivision_x, subdivision_y, variationParams, inMaterial)
+  local pointArray = {}
+  local dx = (max.x - min.x) / subdivision_x
+  local dy = (max.y - min.y) / subdivision_y
+
+  math.randomseed(os.time())
+  --math.random();
+  for i = 0, subdivision_x do
+    pointArray[i] = {}
+    for j = 0, subdivision_y do
+      pointArray[i][j] = {x = min.x + (dx * i), y = min.y + (dy * j), z = min.z + math.random() * variationParams.variationZ}
+    end
+  end
+  
+  local triangleIndex = 0;
+  local triangles = {}
+  for i = 0, subdivision_x - 1 do
+    for j = 0, subdivision_y - 1 do
+      if pointArray[i+1] then
+        if pointArray[i+1][j+i] then
+          triangles[triangleIndex] = Objects.make_triangle({
+          v0 = FalconEye.Point(pointArray[i  ][j  ].x, pointArray[i  ][j  ].y, pointArray[i  ][j  ].z),
+          v1 = FalconEye.Point(pointArray[i+1][j+1].x, pointArray[i+1][j+1].y, pointArray[i+1][j+1].z),
+          v2 = FalconEye.Point(pointArray[i  ][j+1].x, pointArray[i  ][j+1].y, pointArray[i  ][j+1].z),
+          material = inMaterial})
+          triangles[triangleIndex].bCastShadow = false
+          triangleIndex = triangleIndex + 1
+          triangles[triangleIndex] = Objects.make_triangle({
+          v0 = FalconEye.Point(pointArray[i  ][j  ].x, pointArray[i  ][j  ].y, pointArray[i  ][j  ].z),
+          v1 = FalconEye.Point(pointArray[i+1][j  ].x, pointArray[i+1][j  ].y, pointArray[i+1][j  ].z),
+          v2 = FalconEye.Point(pointArray[i+1][j+1].x, pointArray[i+1][j+1].y, pointArray[i+1][j+1].z),
+          material = inMaterial})
+          triangles[triangleIndex].bCastShadow = false
+          triangleIndex = triangleIndex + 1
+        end
+      end
+    end
+  end
+  
+  return triangles
+end
+
 function createPointLigth(position, range, color)
     return PointLight(position, range, color, AttenuationParameters(1, 4.5/range, 75/(range*range)))
 end
@@ -43,10 +91,6 @@ function tablelength(T)
   local count = 0
   for _ in pairs(T) do count = count + 1 end
   return count
-end
-
-function colorToString(c)
-  return "r=" .. c.r .. " g=" .. c.g .. " b=" .. c.b .. " a=" .. c.a 
 end
 
 function tprint (tbl, indent)

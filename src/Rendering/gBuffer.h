@@ -7,6 +7,9 @@
 #define GBUFFER_NORMAL_TEXTURE_UNIT   2
 #define GBUFFER_TEXCOORD_TEXTURE_UNIT 3
 
+namespace FalconEye
+{
+
 class GBuffer
 {
 public:
@@ -37,3 +40,5 @@ private:
     GLuint Textures[GBUFFER_NUM_TEXTURES];
     GLuint DepthTexture;
 };
+
+} // end namespace FalconEye

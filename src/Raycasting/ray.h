@@ -22,6 +22,7 @@ namespace FalconEye {
         const SceneObject* emmiter;
         
         ERayType rayType = ERayType::Default;
+        float maxDistance = -1.0f;
 
         Ray() = default;
         Ray(const Point& o, const Point& e, float i = 1, ERayType t = ERayType::Default, const SceneObject* obj = nullptr);
