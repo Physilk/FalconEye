@@ -11,6 +11,7 @@ DefferedShadingApp::DefferedShadingApp( const int width, const int height, const
 
 DefferedShadingApp::~DefferedShadingApp( )
 {
+    delete gBufferPass;
     delete gBuffer;
 }
 
@@ -25,10 +26,13 @@ int DefferedShadingApp::init( )
         }
     }
 
-    gBufferProgram = read_program("data/shaders/defered_shading_gbuffer.glsl");
-    if (!(gBufferProgram > 0))
+    gBufferPass = new RenderPass();
+    if (gBufferPass != nullptr)
     {
-        return -1;
+        if (!gBufferPass->Init("data/shaders/defered_shading_gbuffer.glsl"))
+        {
+            return -1;
+        }
     }
 
     Exemple_Mesh = ResourceManager::Instance().requestMesh("data/bodyparts/torse.obj");
@@ -36,8 +40,8 @@ int DefferedShadingApp::init( )
 }
 int DefferedShadingApp::quit( )
 {
-    release_program(gBufferProgram);
-    gBufferProgram = 0;
+    delete gBufferPass;
+    gBufferPass  = nullptr;
 
     delete gBuffer;
     gBuffer = nullptr;

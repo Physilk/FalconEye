@@ -4,6 +4,7 @@
 #include "LuaInterface/luaObjectInterface.h"
 #include "Utils/resourceManager.h"
 #include "Rendering/gBuffer.h"
+#include "Rendering/RenderPass.h"
 
 #include "glcore.h"
 
@@ -37,7 +38,7 @@ public:
 
 protected:
     GBuffer* gBuffer;
-    GLuint gBufferProgram;
+    RenderPass* gBufferPass;
 
     Mesh_ptr Exemple_Mesh;
 };
