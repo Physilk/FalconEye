@@ -77,6 +77,13 @@ solution "gKit2light"
 		libdirs (libs_dir_release_x64)
 		links { "opengl32", "glew32", "SDL2", "SDL2main", "SDL2_image", "lua" }
 
+	configuration { "windows", "vs2019", "x64" }
+		includedirs { "extern/visual2015/include" }
+		libdirs { "extern/visual2015/lib" }
+		includedirs (libs_includedirs)
+		libdirs (libs_dir_release_x64)
+		links { "opengl32", "glew32", "SDL2", "SDL2main", "SDL2_image", "lua" }
+
 	configuration "macosx"
 		local frameworks= "-F /Library/Frameworks/"
 		defines { "GK_MACOS" }
