@@ -7,6 +7,7 @@
 #include "Rendering/RenderPass.h"
 
 #include "glcore.h"
+#include "orbiter.h"
 
 namespace FalconEye
 {
@@ -41,6 +42,15 @@ protected:
     RenderPass* gBufferPass;
 
     Mesh_ptr Exemple_Mesh;
+    GLuint Exemple_buffer;
+    Image_ptr Exemple_Image;
+    GLuint Exemple_Texture;
+
+    Orbiter Camera;
+    float FOV;
+
+    const int WindowWidth;
+    const int WindowHeight;
 };
 
 } // end namespace FalconEye

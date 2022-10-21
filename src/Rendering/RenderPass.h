@@ -18,6 +18,7 @@ public:
     virtual void BeginPass();
     virtual void EndPass();
 
+    GLuint GetProgram() const { return mainProgram; }
 protected:
     GLuint GetUniformLocation(const char* uniformName);
 
