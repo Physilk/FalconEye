@@ -2,6 +2,8 @@
 #include "gKit/program.h"
 #include "texture.h"
 #include "uniforms.h"
+#include "gKit/texture.h"
+#include "Rendering/texture2D.h"
 
 namespace FalconEye
 {
@@ -10,6 +12,7 @@ DefferedShadingApp::DefferedShadingApp( const int width, const int height, const
     : App(width, height, major, minor, bResizable)
     , gBuffer(nullptr)
     , gBufferPass(nullptr)
+    , LightingPass(nullptr)
     , Exemple_Mesh(nullptr)
     , Exemple_buffer(0)
     , Exemple_Image(nullptr)
@@ -30,7 +33,7 @@ DefferedShadingApp::~DefferedShadingApp( )
 
 int DefferedShadingApp::init( )
 {
-	glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
@@ -50,6 +53,19 @@ int DefferedShadingApp::init( )
         {
             return -1;
         }
+    }
+
+    LightingPass = new RenderPass();
+    if (LightingPass != nullptr)
+    {
+        if (!LightingPass->Init("data/shaders/defered_shading.glsl"))
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        return -1;
     }
 
     Exemple_Mesh = ResourceManager::Instance().requestMesh("data/capsule/capsule.obj");
@@ -82,6 +98,9 @@ int DefferedShadingApp::init( )
     }
 
     Camera.rotation(90.0f, 0.0f);
+
+    glCreateVertexArrays(1, &DummyVAO);
+
     return 0;
 }
 int DefferedShadingApp::quit( )
@@ -105,16 +124,20 @@ int DefferedShadingApp::render()
 {
 	gBufferPass->BeginPass();
     gBuffer->BindForWriting();
+
+    glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+    
     GLuint program = gBufferPass->GetProgram();
-
 	glBindVertexArray(Exemple_buffer);
 
     Transform ViewTransform = Camera.view();
 
 	Transform mv = ViewTransform;
-	Transform mvp = Transform::Perspective(FOV, WindowWidth / WindowHeight, 0.00001f, 1000000.0f) * ViewTransform;
+	Transform mvp = Transform::Perspective(FOV, (float)WindowWidth / (float)WindowHeight, 0.00001f, 100.0f) * ViewTransform;
 
 	program_uniform(program, "gWVP", mvp);
 	program_uniform(program, "gWorld", mv);
@@ -122,15 +145,33 @@ int DefferedShadingApp::render()
 
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Exemple_Mesh->positions().size());
     gBufferPass->EndPass();
-
+    
+	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
     // AFTER GBUFFER RENDERING
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gBuffer->BindForReading();
+    LightingPass->BeginPass();
+    program = LightingPass->GetProgram();
+    //program_use_texture(program, "gWorldPos0", 0, gBuffer->GetTextures()[0]);
+    program_use_texture(program, "gDiffuse0", 1, gBuffer->GetTextures()[1]);
+    program_use_texture(program, "gNormal0", 2, gBuffer->GetTextures()[2]);
 
-	GLsizei HalfWidth = (GLsizei)(WindowWidth / 2.0f);
+    glBindVertexArray(DummyVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+//     glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer->GetFBO());
+//     glReadBuffer(3);
+// 	glBlitFramebuffer(0, 0, WindowWidth, WindowHeight,
+// 		0, 0, WindowWidth, WindowHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+    /*GLsizei HalfWidth = (GLsizei)(WindowWidth / 2.0f);
 	GLsizei HalfHeight = (GLsizei)(WindowHeight / 2.0f);
 
     gBuffer->SetReadBuffer(GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
@@ -147,7 +188,7 @@ int DefferedShadingApp::render()
 
     gBuffer->SetReadBuffer(GBuffer::GBUFFER_TEXTURE_TYPE_TEXCOORD);
 	glBlitFramebuffer(0, 0, WindowWidth, WindowHeight,
-		HalfWidth, 0, WindowWidth, HalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		HalfWidth, 0, WindowWidth, HalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);*/
     return 1;
 }
 

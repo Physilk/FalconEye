@@ -34,6 +34,8 @@ public:
 
     void SetReadBuffer(GBufferTextureType TextureType);
 
+    GLuint GetFBO() const { return Fbo; }
+    GLuint* GetTextures() { return Textures; }
 private:
 
     GLuint Fbo;

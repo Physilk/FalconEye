@@ -40,6 +40,8 @@ bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     for (unsigned int i = 0; i < (sizeof(Textures) / sizeof(Textures[0])); i++) {
         glBindTexture(GL_TEXTURE_2D, Textures[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, WindowWidth, WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, Textures[i], 0);
     }
 
@@ -75,7 +77,14 @@ void GBuffer::BindForWriting()
 
 void GBuffer::BindForReading()
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, Fbo);
+	//glBindFramebuffer(GL_READ_FRAMEBUFFER, Fbo);
+	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	for (unsigned int i = 0; i < (sizeof(Textures) / sizeof(Textures[0])); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, Textures[GBUFFER_TEXTURE_TYPE_POSITION + i]);
+	}
 }
 
 void GBuffer::SetReadBuffer(GBufferTextureType TextureType)

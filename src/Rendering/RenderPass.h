@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glcore.h"
+#include "ShaderManager.h"
 
 namespace FalconEye
 {
@@ -18,11 +19,12 @@ public:
     virtual void BeginPass();
     virtual void EndPass();
 
-    GLuint GetProgram() const { return mainProgram; }
+    GLuint GetProgram() const { return Program->GetProgram(); }
 protected:
     GLuint GetUniformLocation(const char* uniformName);
 
     GLuint mainProgram;
+    ShaderProgram_ptr Program;
 private:
 
 };

@@ -5,6 +5,7 @@
 #include "Utils/resourceManager.h"
 #include "Rendering/gBuffer.h"
 #include "Rendering/RenderPass.h"
+#include "Rendering/ShaderManager.h"
 
 #include "glcore.h"
 #include "orbiter.h"
@@ -16,7 +17,7 @@ class DefferedShadingApp : public App
 {
 public:
     //! constructeur, dimensions de la fenetre et version d'openGL.
-    DefferedShadingApp( const int width, const int height, const int major= 3, const int minor= 3, bool bResizable = true );
+    DefferedShadingApp( const int width, const int height, const int major= 4, const int minor= 4, bool bResizable = true );
     virtual ~DefferedShadingApp( );
 
     //! a deriver pour creer les objets openGL.
@@ -40,6 +41,7 @@ public:
 protected:
     GBuffer* gBuffer;
     RenderPass* gBufferPass;
+    RenderPass* LightingPass;
 
     Mesh_ptr Exemple_Mesh;
     GLuint Exemple_buffer;
@@ -51,6 +53,8 @@ protected:
 
     const int WindowWidth;
     const int WindowHeight;
+
+    GLuint DummyVAO;
 };
 
 } // end namespace FalconEye
