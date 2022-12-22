@@ -91,6 +91,16 @@ GLuint compile_shader( const GLuint program, const GLenum shader_type, const std
 
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    if (status != GL_TRUE)
+    {
+		GLint log_size;
+		GLsizei size;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_size);
+        std::string outLogs;
+		outLogs.resize(static_cast<size_t>(log_size) + 1);
+		glGetShaderInfoLog(shader, log_size, &size, &outLogs[0]);
+        printf("Shader error:\n%s", outLogs.c_str());
+    }
     return (status == GL_TRUE) ? shader : 0;
 }
 
@@ -139,6 +149,13 @@ int reload_program( GLuint program, const char *filename, const char *definition
         if(fragment_shader == 0)
             printf("[error] compiling fragment shader...\n%s\n", definitions);
         printf("[error] linking program %u '%s'...\n", program, filename);
+		GLint log_size;
+		GLsizei size;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_size);
+        std::string OutLogs;
+		OutLogs.resize(static_cast<size_t>(log_size) + 1);
+		glGetProgramInfoLog(program, log_size, &size, &OutLogs[0]);
+        printf("%s\n", OutLogs.c_str());
         return -1;
     }
     

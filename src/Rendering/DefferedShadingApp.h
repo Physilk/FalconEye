@@ -1,5 +1,6 @@
 #pragma once
 
+#define HAVE_M_PI
 #include "gKit/app.h"
 #include "LuaInterface/luaObjectInterface.h"
 #include "Utils/resourceManager.h"

@@ -301,7 +301,7 @@ public:
         { lua_setallocf(L, func, userdata);}
 
     lua_Number version() const
-        { return lua_version(L); }
+        { return *lua_version(L); }
 
     void checkVersion() const
         { luaL_checkversion(L); }
@@ -723,6 +723,9 @@ public:
 #if LUA_VERSION_NUM == 501
     int resume(int num_args) const
         { return lua_resume(L, num_args); }
+#elif LUA_VERSION_NUM == 503
+    int resume(int num_args, lua_State* from = nullptr) const
+        { return lua_resume(L, from, num_args); }
 #else
     int resume(int num_args, lua_State* from = nullptr, int* nres = nullptr) const
         { return lua_resume(L, from, num_args, nres); }

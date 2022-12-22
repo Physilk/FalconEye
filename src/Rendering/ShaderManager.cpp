@@ -6,17 +6,66 @@
 
 namespace FalconEye
 {
-	ShaderManager ShaderManager::Instance = ShaderManager();
-	PermutationCounterType ShaderPermutationParameter::PermutationCounter;
-
-	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(const std::string& ShaderName, EShaderType Type, const std::string& ParamName)
+	std::istream& operator>>(std::istream& is, ShaderId& shader_id)
 	{
-		return MakePermutationParameterForShader(std::hash<std::string>{}(ShaderName), Type, ParamName);
+		uint8_t TypeAsInt;
+		is >> shader_id.NameHash >> shader_id.Permutation >> TypeAsInt;
+		shader_id.Type = static_cast<EShaderType>(TypeAsInt);
+
+		return is;
 	}
 
-	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, EShaderType Type, const std::string& ParamName)
+	std::ostream& operator<<(std::ostream& os, const ShaderId& shader_id)
 	{
-		auto& PermutationCounterShaderType = PermutationCounter[{ ShaderNameHash , Type}];
+		return os << shader_id.NameHash << shader_id.Permutation << static_cast<uint8_t>(shader_id.Type);
+	}
+
+	void ShaderManager::RegisterShaderProgram(ShaderProgram_ptr Program)
+	{
+		std::set<ShaderId> ShaderIds;
+		for (auto it : Program->Shaders)
+		{
+			ShaderIds.insert(it->GetShaderId());
+			ShaderMap.insert({it->GetShaderId(), it});
+		}
+		ShaderProgramMap.insert({ShaderIds, Program});
+	}
+
+
+	void ShaderManager::FillHashMap(const std::string& Path, bool bRecursive/* = false*/)
+	{
+		boost::filesystem::path sp(Path);
+		boost::filesystem::directory_iterator it{ sp };
+		for (auto it = boost::filesystem::directory_iterator{ sp }; it != boost::filesystem::directory_iterator{}; ++it)
+		{
+			if (boost::filesystem::is_regular_file(*it))
+			{
+				if (std::string("glsl") == (*it).path().extension())
+				{
+					std::string stem = (*it).path().stem().string();
+					HashToFilenameMap.insert({ std::hash<std::string>{}(stem), stem });
+				}
+			}
+			else if (bRecursive && boost::filesystem::is_directory(*it))
+			{
+				FillHashMap((*it).path().string(), bRecursive);
+			}
+		}
+	}
+
+	ShaderManager ShaderManager::Instance = ShaderManager();
+	ShaderPermutationParameter::PermutationCounterType ShaderPermutationParameter::PermutationCounter;
+
+	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(const std::string& ShaderName, const std::string& ParamName)
+	{
+		boost::filesystem::path sp(ShaderName);
+		boost::filesystem::path Stem = sp.stem();
+		return MakePermutationParameterForShader(std::hash<std::string>{}(Stem.string()), ParamName);
+	}
+
+	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
+	{
+		auto& PermutationCounterShaderType = PermutationCounter[ShaderNameHash];
 		auto& PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
 		if (PermutationParameterIterator != PermutationCounterShaderType.end())
 		{
@@ -55,6 +104,17 @@ namespace FalconEye
 	Shader::~Shader()
 	{
 		glDeleteShader(ProgramID);
+	}
+
+	FalconEye::ShaderId Shader::MakeShaderID(const std::string& inShaderPath, EShaderType ShaderType, const std::vector<ShaderPermutationParameter>& inPermutationParams)
+	{
+		boost::filesystem::path sp(inShaderPath);
+		boost::filesystem::path Stem = sp.stem(); // filename without extension
+		if (!Stem.string().empty())
+		{
+			return ShaderId(ShaderType, inPermutationParams, std::hash<std::string>{}(Stem.string()));
+		}
+		return ShaderId();
 	}
 
 	// charge un fichier texte.
@@ -223,6 +283,50 @@ namespace FalconEye
 		return true;
 	}
 
+	std::istream& operator>>(std::istream& is, Shader& shader)
+	{
+		GLint length = 0;
+		GLenum format = 0;
+		is >> shader.ID >> format >> length;
+		std::vector<GLubyte> buffer(length);
+
+		is.read(reinterpret_cast<char*>(buffer.data()), length);
+
+		if (shader.ProgramID == 0)
+		{
+			shader.ProgramID = glCreateShader(shader.ID.GetGLShaderType());
+;		}
+		glShaderBinary(1, &shader.ProgramID, format, buffer.data(), length);
+		return is;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Shader& shader)
+	{
+		if (shader.bIsCompiled)
+		{
+			GLint formats = 0;
+			glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+			if (formats < 1) {
+				std::cerr << "Driver does not support any binary formats." << std::endl;
+				return os;
+			}
+
+			GLint length = 0;
+			glGetProgramiv(shader.ProgramID, GL_PROGRAM_BINARY_LENGTH, &length);
+
+			// Retrieve the binary code
+			std::vector<GLubyte> buffer(length);
+			GLenum format = 0;
+			glGetProgramBinary(shader.ProgramID, length, NULL, &format, buffer.data());
+
+			os << shader.ID << format << length;
+			os.write(reinterpret_cast<char*>(buffer.data()), length);
+		}
+		return os;
+	}
+
+	
+
 	PermutationId ShaderId::GetPermutationIdFromParams(const std::vector<class ShaderPermutationParameter>& PermutationParams)
 	{
 		PermutationId ID(0);
@@ -231,6 +335,20 @@ namespace FalconEye
 			ID |= 1 << param.GetShift();
 		}
 		return ID;
+	}
+
+	GLenum ShaderId::GetGLShaderType()
+	{
+		switch (Type)
+		{
+		case FalconEye::EShaderType::VertexShader:
+			return GL_VERTEX_SHADER;
+		case FalconEye::EShaderType::PixelShader:
+			return GL_FRAGMENT_SHADER;
+		case FalconEye::EShaderType::Num:
+		default:
+			return 0;
+		}
 	}
 
 	ShaderProgram::ShaderProgram(const std::vector<Shader_ptr>& inShaders, bool bCompile)

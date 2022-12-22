@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include "GL\glew.h"
+#include <set>
 
 
 namespace FalconEye
@@ -35,21 +36,43 @@ namespace FalconEye
 			, Permutation(GetPermutationIdFromParams(inPermutationParams))
 			, NameHash(inHash)
 		{}
+
+		bool operator==(const ShaderId& other) const
+		{
+			return !(*this!=other);
+		}
+
+		bool operator!=(const ShaderId& other) const
+		{
+			return NameHash != other.NameHash || Type != other.Type || Permutation != other.Permutation;
+		}
+
+		bool operator<(const ShaderId& other) const
+		{
+			return NameHash < other.NameHash || Permutation < other.Permutation || Type < other.Type;
+		}
+
+		friend std::istream& operator>> (std::istream& is, ShaderId& shader_id);
+		friend std::ostream& operator<< (std::ostream& os, const ShaderId& shader_id);
+
 	public:
 		static PermutationId GetPermutationIdFromParams(const std::vector<class ShaderPermutationParameter>& PermutationParams);
 	public:
 		EShaderType GetShaderType() const { return Type; }
 		PermutationId GetPermutationId() const { return Permutation; }
 		Hash GetNameHash() const { return NameHash; }
+
+		GLenum GetGLShaderType();
 	private:
 		EShaderType Type;
 		PermutationId Permutation;
 		Hash NameHash;
 	};
 
-	using PermutationCounterType = std::map<std::tuple<Hash, EShaderType>, std::map<std::string, class ShaderPermutationParameter>>;
+	
 	class ShaderPermutationParameter
 	{
+		using PermutationCounterType = std::map<Hash, std::map<std::string, class ShaderPermutationParameter>>;
 	public:
 		ShaderPermutationParameter(const std::string& inName, uint8_t inShift) noexcept
 			: ParameterName(inName)
@@ -67,8 +90,9 @@ namespace FalconEye
 		//ShaderPermutationParameter(ShaderPermutationParameter&&) = default;
 
 	public:
-		static ShaderPermutationParameter& MakePermutationParameterForShader(const std::string& ShaderName, EShaderType Type, const std::string& ParamName);
-		static ShaderPermutationParameter& MakePermutationParameterForShader(Hash ShaderNameHash, EShaderType Type, const std::string& ParamName);
+
+		static ShaderPermutationParameter& MakePermutationParameterForShader(const std::string& ShaderName, const std::string& ParamName);
+		static ShaderPermutationParameter& MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName);
 
 	public:
 		const std::string& GetParamName() const { return ParameterName; }
@@ -93,9 +117,20 @@ namespace FalconEye
 		Shader(const std::string& inShaderPath, EShaderType ShaderType, const std::vector<ShaderPermutationParameter>& inPermutationParams, bool bCompile = true);
 		Shader(const Shader&) = delete;
 		virtual ~Shader();
+	public:
+		static ShaderId MakeShaderID(const std::string& inShaderPath, EShaderType ShaderType, const std::vector<ShaderPermutationParameter>& inPermutationParams);
 
 	public:
 		bool Compile(std::string& OutErrors);
+		const ShaderId& GetShaderId() const { return ID;}
+
+		operator GLuint() const { return ProgramID; }
+
+		friend std::istream& operator>> (std::istream& is, Shader& shader);
+		friend std::ostream& operator<< (std::ostream& os, const Shader& shader);
+
+		//std::istream& operator>> (std::istream& is);
+		//std::ostream& operator<< (std::ostream& os);
 	private:
 		ShaderId ID;
 		bool bIsCompiled = false;
@@ -108,6 +143,7 @@ namespace FalconEye
 
 	class ShaderProgram
 	{
+		friend class ShaderManager;
 	public:
 		ShaderProgram(const std::vector<Shader_ptr>& inShaders, bool bCompile = true);
 		ShaderProgram(const ShaderProgram&) = delete;
@@ -137,9 +173,24 @@ namespace FalconEye
 	{
 	public:
 		static ShaderManager& GetInstance() { return Instance; }
+
+		void RegisterShaderProgram(ShaderProgram_ptr Program);
+	private:
+		// TODO: Configure shaders from LUA
+		LuaIntf::LuaContext LuaContext; 
+
+		/*ShaderProgram_ptr GetShaderProgram(const std::set<ShaderId>& ShaderIds);
+		Shader_ptr GetShader(const ShaderId& ShaderId);*/
+		void FillHashMap(const std::string& Path, bool bRecursive = false);
 	private:
 		static ShaderManager Instance;
+		
+		using ShaderContainerType = std::map<ShaderId, Shader_ptr>;
+		using ProgramContainerType = std::map<std::set<ShaderId>, ShaderProgram_ptr>;
+		using HashToFilenameType = std::map<Hash, std::string>;
 
-	private:
+		ShaderContainerType ShaderMap;
+		ProgramContainerType ShaderProgramMap;
+		HashToFilenameType HashToFilenameMap;
 	};
 } // end namespace FalconEye

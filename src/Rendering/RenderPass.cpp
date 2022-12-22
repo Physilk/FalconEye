@@ -18,15 +18,11 @@ bool RenderPass::Init(const char* mainShaderFile)
     std::vector< ShaderPermutationParameter> parameters;
     parameters.reserve(3);
     std::vector<Shader_ptr> shaders;
-    parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, EShaderType::VertexShader, "USE_TEXCOORD"));
-    parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, EShaderType::VertexShader, "USE_NORMAL"));
+    parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, "USE_TEXCOORD"));
+    parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, "USE_NORMAL"));
     //parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, EShaderType::VertexShader, "USE_COLOR"));
-    shaders.push_back(std::make_shared<Shader>(mainShaderFile, EShaderType::VertexShader, parameters));
 
-    parameters.clear();
-	parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, EShaderType::PixelShader, "USE_TEXCOORD"));
-	parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, EShaderType::PixelShader, "USE_NORMAL"));
-	//parameters.push_back(ShaderPermutationParameter::MakePermutationParameterForShader(mainShaderFile, EShaderType::PixelShader, "USE_COLOR"));
+    shaders.push_back(std::make_shared<Shader>(mainShaderFile, EShaderType::VertexShader, parameters));
     shaders.push_back(std::make_shared<Shader>(mainShaderFile, EShaderType::PixelShader, parameters));
 
     Program = ShaderProgram_ptr(new ShaderProgram(shaders, true));
