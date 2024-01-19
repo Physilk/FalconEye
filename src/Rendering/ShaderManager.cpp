@@ -28,9 +28,43 @@ namespace FalconEye
 			ShaderIds.insert(it->GetShaderId());
 			ShaderMap.insert({it->GetShaderId(), it});
 		}
-		ShaderProgramMap.insert({ShaderIds, Program});
+		ShaderProgramMap.insert({Program->GetId(), Program});
 	}
 
+	std::istream& operator>>(std::istream& is, ShaderProgramId& shaderProgramId)
+	{
+		size_t nb_shaderIds;
+		is >> nb_shaderIds;
+		for (int i = 0; i < nb_shaderIds; ++i)
+		{
+			ShaderId tmpShaderId;
+			is >> tmpShaderId;
+			shaderProgramId.ShaderIds.insert(tmpShaderId);
+		}
+		is >> shaderProgramId.ProgramHash;
+
+		return is;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const ShaderProgramId& shaderProgramId)
+	{
+		os << shaderProgramId.ShaderIds.size();
+		for (auto it : shaderProgramId.ShaderIds)
+		{
+			os << it;
+		}
+		return os << shaderProgramId.ProgramHash;
+	}
+
+	FalconEye::ShaderProgram_ptr ShaderManager::GetShaderProgram(ShaderProgramId Id)
+	{
+		auto it = ShaderProgramMap.find(Id);
+		if (it != ShaderProgramMap.end())
+		{
+			return it->second;
+		}
+		return nullptr;
+	}
 
 	void ShaderManager::FillHashMap(const std::string& Path, bool bRecursive/* = false*/)
 	{
@@ -43,6 +77,13 @@ namespace FalconEye
 				if (std::string("glsl") == (*it).path().extension())
 				{
 					std::string stem = (*it).path().stem().string();
+
+					// check for duplicate entry
+					auto it = HashToFilenameMap.find(std::hash<std::string>{}(stem));
+					if (it != HashToFilenameMap.end())
+					{
+						std::cerr << "Duplicate shader name already registered with ShaderManager:" << stem << ". Overriding.";
+					}
 					HashToFilenameMap.insert({ std::hash<std::string>{}(stem), stem });
 				}
 			}
@@ -77,6 +118,21 @@ namespace FalconEye
 			return InsertPair.first->second;
 		}
 	}
+
+	/*ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
+	{
+		auto& PermutationCounterShaderType = PermutationCounter[ShaderNameHash];
+		auto& PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
+		if (PermutationParameterIterator != PermutationCounterShaderType.end())
+		{
+			return PermutationParameterIterator->second;
+		}
+		else
+		{
+			auto& InsertPair = PermutationCounterShaderType.insert({ParamName, ShaderPermutationParameter(ParamName, PermutationCounterShaderType.size())});
+			return InsertPair.first->second;
+		}
+	}*/
 
 	Shader::Shader(const std::string& inShaderPath, EShaderType ShaderType, const std::vector<ShaderPermutationParameter>& inPermutationParams, bool bCompile /*= true*/)
 	{
@@ -352,6 +408,7 @@ namespace FalconEye
 	}
 
 	ShaderProgram::ShaderProgram(const std::vector<Shader_ptr>& inShaders, bool bCompile)
+		: Id(inShaders)
 	{
 		Shaders = inShaders;
 		if (bCompile)
@@ -396,6 +453,33 @@ namespace FalconEye
 		OutLogs.resize(static_cast<size_t>(log_size) + 1);
 		glGetProgramInfoLog(ProgramID, log_size, &size, &OutLogs[0]);
 		return status == GL_TRUE;
+	}
+
+	ShaderProgramId::ShaderProgramId(const std::set<ShaderId>& inShaderIds)
+		: ShaderIds(inShaderIds)
+	{
+		GenerateProgramHashFromShaderIds();
+	}
+
+	ShaderProgramId::ShaderProgramId(const std::vector<Shader_ptr>& ShaderArray)
+	{
+		for (auto it : ShaderArray)
+		{
+			ShaderIds.insert(it->GetShaderId());
+		}
+
+		GenerateProgramHashFromShaderIds();
+	}
+
+	void ShaderProgramId::GenerateProgramHashFromShaderIds()
+	{
+		assert(ShaderIds.size() > 0);
+		// Generate the hash value for the ShaderProgramID
+		ProgramHash = std::hash<ShaderId>{}(*ShaderIds.begin());
+		for (auto it = ShaderIds.begin()++; it != ShaderIds.end(); ++it)
+		{
+			hash_combine(ProgramHash, *it);
+		}
 	}
 
 } // end namespace FalconEye

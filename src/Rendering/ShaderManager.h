@@ -14,6 +14,14 @@ namespace FalconEye
 	using PermutationId = uint32_t;
 	using Hash = std::size_t;
 
+	//putting this here for now
+	template <class T>
+	inline void hash_combine(Hash& seed, const T& v)
+	{
+		std::hash<T> hasher;
+		seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	}
+
 	enum class EShaderType : uint8_t
 	{
 		VertexShader,
@@ -69,7 +77,6 @@ namespace FalconEye
 		Hash NameHash;
 	};
 
-	
 	class ShaderPermutationParameter
 	{
 		using PermutationCounterType = std::map<Hash, std::map<std::string, class ShaderPermutationParameter>>;
@@ -141,6 +148,39 @@ namespace FalconEye
 	};
 	using Shader_ptr = std::shared_ptr<Shader>;
 
+	class ShaderProgramId {
+	public:
+		ShaderProgramId(const std::set<ShaderId>& inShaderIds);
+		ShaderProgramId(const std::vector<Shader_ptr>& ShaderArray);
+		ShaderProgramId(const ShaderProgramId& other)
+			: ShaderIds(other.ShaderIds)
+			, ProgramHash(other.ProgramHash)
+		{}
+
+		// Equality comparison operator for ShaderProgramID
+		bool operator==(const ShaderProgramId& other) const {
+			return !(*this != other);
+		}
+
+		bool operator!=(const ShaderProgramId& other) const
+		{
+			return ProgramHash != other.ProgramHash;
+		}
+
+		bool operator<(const ShaderProgramId& other) const
+		{
+			return ProgramHash < other.ProgramHash;
+		}
+	private:
+		void GenerateProgramHashFromShaderIds();
+	public:
+		friend std::istream& operator>> (std::istream& is, ShaderProgramId& shader);
+		friend std::ostream& operator<< (std::ostream& os, const ShaderProgramId& shader);
+	private:
+		std::set<ShaderId> ShaderIds;
+		Hash ProgramHash;
+	};
+
 	class ShaderProgram
 	{
 		friend class ShaderManager;
@@ -151,6 +191,7 @@ namespace FalconEye
 			: Shaders(other.Shaders)
 			, bIsLinked(other.bIsLinked)
 			, ProgramID(other.ProgramID)
+			, Id(other.Id)
 		{
 			other.ProgramID = 0;
 		}
@@ -159,14 +200,18 @@ namespace FalconEye
 	public:
 		bool LinkProgram(std::string& OutLogs);
 		void UseProgram() { glUseProgram(ProgramID); }
-		GLuint GetProgram() { return ProgramID; }
+		GLuint GetProgram() const { return ProgramID; }
 
+		ShaderProgramId GetId() const { return Id; }
 		operator GLuint() const { return ProgramID; }
 	private:
 		std::vector<Shader_ptr> Shaders;
 		bool bIsLinked = false;
 		GLuint ProgramID = 0;
+
+		ShaderProgramId Id;
 	};
+
 	using ShaderProgram_ptr = std::shared_ptr<ShaderProgram>;
 
 	class ShaderManager
@@ -175,18 +220,19 @@ namespace FalconEye
 		static ShaderManager& GetInstance() { return Instance; }
 
 		void RegisterShaderProgram(ShaderProgram_ptr Program);
+		ShaderProgram_ptr GetShaderProgram(ShaderProgramId Id);
 	private:
 		// TODO: Configure shaders from LUA
-		LuaIntf::LuaContext LuaContext; 
+		//LuaIntf::LuaContext LuaContext; 
 
-		/*ShaderProgram_ptr GetShaderProgram(const std::set<ShaderId>& ShaderIds);
-		Shader_ptr GetShader(const ShaderId& ShaderId);*/
+		//ShaderProgram_ptr GetShaderProgram(const std::set<ShaderId>& ShaderIds);
+		//Shader_ptr GetShader(const ShaderId& ShaderId);
 		void FillHashMap(const std::string& Path, bool bRecursive = false);
 	private:
 		static ShaderManager Instance;
 		
 		using ShaderContainerType = std::map<ShaderId, Shader_ptr>;
-		using ProgramContainerType = std::map<std::set<ShaderId>, ShaderProgram_ptr>;
+		using ProgramContainerType = std::map<ShaderProgramId, ShaderProgram_ptr>;
 		using HashToFilenameType = std::map<Hash, std::string>;
 
 		ShaderContainerType ShaderMap;
@@ -194,3 +240,14 @@ namespace FalconEye
 		HashToFilenameType HashToFilenameMap;
 	};
 } // end namespace FalconEye
+
+template <> struct std::hash<FalconEye::ShaderId>
+{
+	FalconEye::Hash operator()(const FalconEye::ShaderId& x) const
+	{
+		FalconEye::Hash tmp_hash = x.GetNameHash();
+		FalconEye::hash_combine<FalconEye::EShaderType>(tmp_hash, x.GetShaderType());
+		FalconEye::hash_combine<FalconEye::PermutationId>(tmp_hash, x.GetPermutationId());
+		return tmp_hash;
+	}
+};
