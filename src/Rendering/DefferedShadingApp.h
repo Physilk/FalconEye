@@ -7,6 +7,7 @@
 #include "Rendering/gBuffer.h"
 #include "Rendering/RenderPass.h"
 #include "Rendering/ShaderManager.h"
+#include "Rendering/Texture2D.h"
 
 #include "glcore.h"
 #include "orbiter.h"
@@ -49,6 +50,15 @@ protected:
     Image_ptr Exemple_Image;
     GLuint Exemple_Texture;
 
+    std::vector<Image_ptr> CubemapImages;
+	Texture2D_ptr Cubemaptexture;
+    Mesh_ptr CubemapMesh;
+    GLuint CubemapBuffer;
+    RenderPass_ptr CubemapRenderPass;
+    RenderPass_ptr CubemapRenderPass_deffered;
+
+    ShaderProgram_ptr UnlitLightingShader;
+
     Orbiter Camera;
     float FOV;
 
@@ -56,6 +66,13 @@ protected:
     const int WindowHeight;
 
     GLuint DummyVAO;
+private:
+
+    bool bGBufferDisplay = false;
+    bool bDepthDisplay = false;
+    bool bStencilDisplay = false;
+
+    void SetupCubemap();
 };
 
 } // end namespace FalconEye

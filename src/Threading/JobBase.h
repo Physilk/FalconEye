@@ -35,6 +35,7 @@ private:
     
     float FExecutionTime;
 
+    virtual int Init() { return 0; };
     virtual int VirtualExecute() = 0;
 public:
     

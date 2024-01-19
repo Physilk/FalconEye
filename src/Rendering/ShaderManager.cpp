@@ -66,14 +66,16 @@ namespace FalconEye
 	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
 	{
 		auto& PermutationCounterShaderType = PermutationCounter[ShaderNameHash];
-		auto& PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
+		//probably does not work as intended (should be ref)
+		auto PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
 		if (PermutationParameterIterator != PermutationCounterShaderType.end())
 		{
 			return PermutationParameterIterator->second;
 		}
 		else
 		{
-			auto& InsertPair = PermutationCounterShaderType.insert({ParamName, ShaderPermutationParameter(ParamName, PermutationCounterShaderType.size())});
+			//probably does not work as intended (should be ref)
+			auto InsertPair = PermutationCounterShaderType.insert({ParamName, ShaderPermutationParameter(ParamName, PermutationCounterShaderType.size())});
 			return InsertPair.first->second;
 		}
 	}
@@ -82,7 +84,8 @@ namespace FalconEye
 	{
 		ShaderPath = inShaderPath;
 		PermutationParameters = inPermutationParams;
-
+		std::cout << "Compiling shader: " << inShaderPath << " Type:";
+		std::cout << (ShaderType == EShaderType::VertexShader ? " vertexShader\n":" pixelshader\n");
 		boost::filesystem::path sp(ShaderPath);
 		boost::filesystem::path Stem = sp.stem(); // filename without extension
 		if (!Stem.string().empty())
@@ -263,6 +266,9 @@ namespace FalconEye
 		std::string FileContent = read(ShaderPath.c_str());
 		if (FileContent.size() > 0)
 		{
+			std::cout << "Compiling shader Type:";
+			std::cout << (ID.GetShaderType() == EShaderType::VertexShader ? " vertexShader\n":" pixelshader\n");
+		
 			std::string Logs;
 			FileContent = prepare_source(FileContent, ID.GetShaderType(), PermutationParameters);
 			ProgramID = compile_shader(ProgramID, getShaderTypeGLValue(ID.GetShaderType()), FileContent, Logs);

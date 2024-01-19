@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include "GL\glew.h"
+#include "glcore.h"
 #include <set>
 
 
@@ -177,7 +177,7 @@ namespace FalconEye
 		void RegisterShaderProgram(ShaderProgram_ptr Program);
 	private:
 		// TODO: Configure shaders from LUA
-		LuaIntf::LuaContext LuaContext; 
+		//LuaIntf::LuaContext LuaContext; 
 
 		/*ShaderProgram_ptr GetShaderProgram(const std::set<ShaderId>& ShaderIds);
 		Shader_ptr GetShader(const ShaderId& ShaderId);*/

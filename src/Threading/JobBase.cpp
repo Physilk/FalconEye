@@ -8,6 +8,14 @@ EJobStatus TJobBase::Run()
     if (!(FStatus.load() & (EJobStatus::Finished | EJobStatus::Started) ))
     {
         FStatus.store(EJobStatus::Started);
+        int ret_init = Init();
+        if (ret_init)
+        {
+            FStatus.store(EJobStatus::Finished_error);
+            FEndPromise.set_value();
+            return FStatus;
+        }
+        
         auto begin = std::chrono::high_resolution_clock::now(); 
         int ret = VirtualExecute();
         FExecutionTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - begin).count();
