@@ -19,7 +19,7 @@ public:
     virtual void BeginPass();
     virtual void EndPass();
 
-    GLuint GetProgram() const { return Program->GetProgram(); }
+    GLuint GetProgram() const { return Program != nullptr ? Program->GetProgram() : 0; }
 protected:
     GLuint GetUniformLocation(const char* uniformName);
 
@@ -28,5 +28,7 @@ protected:
 private:
 
 };
+
+using RenderPass_ptr = std::shared_ptr<RenderPass>;
 
 } // en namespace FalconEye

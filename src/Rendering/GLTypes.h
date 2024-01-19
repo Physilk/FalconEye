@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "GL\glew.h"
+#include "glcore.h"
 
 namespace FalconEye
 {

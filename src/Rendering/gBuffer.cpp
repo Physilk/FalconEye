@@ -9,6 +9,8 @@ GBuffer::GBuffer()
 {
     Fbo = 0;
     DepthTexture = 0;
+    StencilTextureStorage = 0;
+    StencilTextureView = 0;
     std::memset(Textures, 0, sizeof(Textures));
 }
 
@@ -25,6 +27,16 @@ GBuffer::~GBuffer()
     if (DepthTexture != 0) {
         glDeleteTextures(1, &DepthTexture);
     }
+
+    //I am not sure as to how to delete texture storage and texture view
+    if (StencilTextureStorage != 0) {
+        glDeleteTextures(1, &StencilTextureStorage);
+    }
+    
+    if (StencilTextureView != 0) 
+    {
+        glDeleteTextures(1, &StencilTextureView);
+    }
 }
 
 bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
@@ -36,6 +48,8 @@ bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     // Create the gbuffer textures
     glGenTextures((sizeof(Textures) / sizeof(Textures[0])), Textures);
     glGenTextures(1, &DepthTexture);
+    glGenTextures(1, &StencilTextureStorage);
+    glGenTextures(1, &StencilTextureView);
 
     for (unsigned int i = 0; i < (sizeof(Textures) / sizeof(Textures[0])); i++) {
         glBindTexture(GL_TEXTURE_2D, Textures[i]);
@@ -47,8 +61,18 @@ bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
 
     // depth
     glBindTexture(GL_TEXTURE_2D, DepthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, WindowWidth, WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    //glTexStorage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WindowWidth, WindowHeight);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WindowWidth, WindowHeight, 0,  GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DepthTexture, 0);
+
+    // stencil
+    //glBindTexture(GL_TEXTURE_2D, StencilTextureStorage);
+    
+    //glBindTexture(GL_TEXTURE_2D, StencilTextureView);
+    glTextureView(StencilTextureView, GL_TEXTURE_2D, DepthTexture, GL_DEPTH24_STENCIL8, 0, 1, 0, 1);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX8, WindowWidth, WindowHeight, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, DepthTexture, 0);
+
 
     GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0,
         GL_COLOR_ATTACHMENT1,
@@ -81,15 +105,37 @@ void GBuffer::BindForReading()
 	
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	for (unsigned int i = 0; i < (sizeof(Textures) / sizeof(Textures[0])); i++) {
+    unsigned int i = 0;
+	for (i = 0; i < (sizeof(Textures) / sizeof(Textures[0])); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, Textures[GBUFFER_TEXTURE_TYPE_POSITION + i]);
+		glBindTexture(GL_TEXTURE_2D, Textures[static_cast<uint8_t>(GBufferTextureType_RGB32F::EType::Position) + i]);
 	}
+
+    glActiveTexture(GL_TEXTURE0 + i);
+	glBindTexture(GL_TEXTURE_2D, DepthTexture);
+    glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_STENCIL_TEXTURE_MODE, GL_DEPTH_COMPONENT);
+	++i;
+
+    glActiveTexture(GL_TEXTURE0 + i);
+	glBindTexture(GL_TEXTURE_2D, StencilTextureView);
+    glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_STENCIL_TEXTURE_MODE, GL_STENCIL_INDEX);
+	++i;
 }
 
-void GBuffer::SetReadBuffer(GBufferTextureType TextureType)
+void GBuffer::SetReadBuffer(GBufferTextureType_RGB32F TextureType)
 {
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + TextureType);
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + static_cast<uint8_t>(TextureType));
 }
+
+void GBuffer::SetReadBuffer_Depth()
+{
+    glReadBuffer(GL_DEPTH_ATTACHMENT);
+}
+
+void GBuffer::SetReadBuffer_Stencil()
+{
+    glReadBuffer(GL_STENCIL_ATTACHMENT);
+}
+
 
 } // end namespace FalconEye

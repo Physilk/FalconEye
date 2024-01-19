@@ -301,7 +301,7 @@ public:
         { lua_setallocf(L, func, userdata);}
 
     lua_Number version() const
-        { return *lua_version(L); }
+        { return lua_version(L); }
 
     void checkVersion() const
         { luaL_checkversion(L); }

@@ -33,7 +33,7 @@ solution "gKit2light"
 		includedirs ("../lua/include/")
 		libdirs { "../lua/" }
 		buildoptions { "-mtune=native" }
-		buildoptions { "-std=c++14" }
+		buildoptions { "-std=c++20" }
 		buildoptions { "-W -Wall -Wextra -Wsign-compare -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable", "-pipe" }
 		buildoptions { "-flto"}
 		linkoptions { "-flto"}
@@ -93,7 +93,7 @@ solution "gKit2light"
 
  -- description des fichiers communs
 local src = "src/"
-local subDirs = { "gKit", "LuaInterface", "LuaIntf", "Raycasting", "Rendering", "Threading", "Utils"}
+local subDirs = { "gKit", "LuaInterface", "LuaIntf", "Raycasting", "Rendering", "Threading", "Utils", "37C3"}
 
 local function generateProjectFiles(src, subDirs)
     local ret = {}

@@ -10,17 +10,38 @@
 namespace FalconEye
 {
 
+class GBufferTextureType_RGB32F
+{
+public:
+    enum class EType : uint8_t {
+        Position,
+        Diffuse,
+        Normal,
+        TexCoord,
+        Num
+    } Type;
+
+    GBufferTextureType_RGB32F(GBufferTextureType_RGB32F::EType t) : Type(t){}
+    operator uint8_t() const { return static_cast<uint8_t>(Type); }
+};
+
+class GBufferTextureType_R8
+{
+public:
+    enum class EType : uint8_t {
+        CustomStencil,
+        Num
+    } Type;
+
+    GBufferTextureType_R8(GBufferTextureType_R8::EType t) : Type(t){}
+    operator uint8_t() const { return static_cast<uint8_t>(Type); }
+
+    
+};
+
 class GBuffer
 {
 public:
-
-    enum GBufferTextureType {
-        GBUFFER_TEXTURE_TYPE_POSITION,
-        GBUFFER_TEXTURE_TYPE_DIFFUSE,
-        GBUFFER_TEXTURE_TYPE_NORMAL,
-        GBUFFER_TEXTURE_TYPE_TEXCOORD,
-        GBUFFER_NUM_TEXTURES
-    };
 
     GBuffer();
 
@@ -32,15 +53,21 @@ public:
 
     void BindForReading();
 
-    void SetReadBuffer(GBufferTextureType TextureType);
+    void SetReadBuffer(GBufferTextureType_RGB32F TextureType);
+    void SetReadBuffer_Depth();
+    void SetReadBuffer_Stencil();
 
     GLuint GetFBO() const { return Fbo; }
     GLuint* GetTextures() { return Textures; }
+    GLuint GetDepthTexture() const { return DepthTexture; }
+    GLuint GetStencilTexture() const { return StencilTextureView; }
 private:
 
     GLuint Fbo;
-    GLuint Textures[GBUFFER_NUM_TEXTURES];
+    GLuint Textures[static_cast<uint8_t>(GBufferTextureType_RGB32F::EType::Num)];
     GLuint DepthTexture;
+    GLuint StencilTextureStorage;
+    GLuint StencilTextureView;
 };
 
 } // end namespace FalconEye

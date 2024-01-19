@@ -30,18 +30,37 @@ namespace FalconEye
 	void Texture2D::InitCubemap(std::vector<Image_ptr> images, ETextureInternalFormat internalFormat /*= ETextureInternalFormat::EType::RGBA_Compressed*/)
 	{
 		GLTarget = ETextureTarget::EType::Cubemap;
+		glBindTexture(GLTarget, GLTexture);
 		if (images.size() == 6)
 		{
 			for (int i = 0; i < images.size(); ++i)
 			{
 				//SetData_Internal(images[i]->width(), images[i]->height(), images[i]->buffer(), internalFormat, ETextureFormat::EType::RGBA, ETextureTarget::CubemapAtIndex(i));
-				SetData_Internal(images[i]->width(), images[i]->height(), images[i]->buffer(), internalFormat, ETextureFormat::EType::RGBA, static_cast<GLenum>(static_cast<uint8_t>(ETextureTarget::EType::Cubemap_Positive_X) + 1));
+				//SetData_Internal(images[i]->width(), images[i]->height(), images[i]->buffer(), internalFormat, ETextureFormat::EType::RGB, static_cast<GLenum>(static_cast<uint8_t>(ETextureTarget::EType::Cubemap_Positive_X) + i));
+				glTexImage2D(
+					ETextureTarget::CubemapAtIndex(i)
+					, 0
+					, internalFormat
+					, images[i]->width()
+					, images[i]->height()
+					, 0
+					, static_cast<GLenum>(ETextureFormat::EType::RGBA)
+					, static_cast<GLenum>(EGLType::EType::Float)
+					, images[i]->buffer());
 			}
 		}
 		else
 		{
 			//TODO: error
+			std::cout << "Wrong number of texture to initialize cubemap\n";
 		}
+
+		// fixe les parametres de filtrage par defaut
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	}
 
 	void Texture2D::UseTexture(int unit)

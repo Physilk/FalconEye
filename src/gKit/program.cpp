@@ -72,7 +72,7 @@ std::string prepare_source( std::string file, const std::string& definitions )
         source.append(version);                         // re-insere la version (supprimee de file)
         source.assign(file);                            // insere le source
     }
-    
+    //printf("%s\n", source.c_str());
     return source;
 }
 

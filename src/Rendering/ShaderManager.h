@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include "GL\glew.h"
+#include "glcore.h"
 #include <set>
 
 

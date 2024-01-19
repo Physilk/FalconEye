@@ -14,9 +14,17 @@ void main()
 
 #ifdef FRAGMENT_SHADER
 
+#ifndef SHADING_MODEL
+    #define SHADING_MODEL 1
+#endif
+
 uniform sampler2D gWorldPos0;
 uniform sampler2D gDiffuse0;
 uniform sampler2D gNormal0;
+
+//unused for now
+//uniform sampler2D gDepth;
+//uniform sampler2D gStencil;
 
 out vec4 FragColor;
 
@@ -54,8 +62,12 @@ void main()
     vec3 Color = texture(gDiffuse0, TexCoord).xyz;
     vec3 Normal = texture(gNormal0, TexCoord).xyz;
     Normal = normalize(Normal);
-
+#if SHADING_MODEL == 1
     FragColor = vec4(Color, 1.0)  * CalcDirectionalLight(normalize(vec3(-1, -1,  - 1)),  WorldPos, Normal);
+#elif SHADING_MODEL == 2
+    FragColor = vec4(Color, 1.0);
+#endif
+    //FragColor = texture(gDepth, TexCoord);
 }
 
 #endif

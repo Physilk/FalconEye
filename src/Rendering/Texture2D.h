@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
-#include "GL\glew.h"
-#include "Rendering\GLTypes.h"
-#include "Utils\resourceManager.h"
+#include "glcore.h"
+#include "Rendering/GLTypes.h"
+#include "Utils/resourceManager.h"
 
 namespace FalconEye
 {

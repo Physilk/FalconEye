@@ -20,7 +20,8 @@ void TThreadManager::Init()
         #ifdef DEBUG
         std::cout << "Initializing "<< thread_number << " threads\n";
         #endif
-
+        //override 
+        thread_number = 25;
         for(unsigned int i = 0; i < thread_number; ++i)
         {
             FStopThreadBools.push_back(false);
