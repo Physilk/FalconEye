@@ -237,7 +237,29 @@ namespace FalconEye {
         bboxBinTree = new BBoxBinTree(BBox(boundMin, boundMax), Tools::sharedPtrVecToPtrVec(objects), 11);
     }
 
-    // -----------------------------------------------------------------------
+	void Scene::LuaRenderScene(SceneRenderOption_ptr options)
+	{
+		SceneRenderer_ptr sceneRenderer = std::make_shared<SceneRenderer>();
+        RenderingContext_ptr renderingContext = std::make_shared<RenderingContext>(this, sceneRenderer.get());
+
+		sceneRenderer->SetContext(renderingContext);
+
+		Image image = Image(options->getWidth(), options->getHeight());
+		auto startTime = std::chrono::high_resolution_clock::now();
+
+        std::vector<Threading::TJob_ptr> renderingJobs;
+        sceneRenderer->renderScene(&image, renderingJobs, options);
+
+        for (auto Job : renderingJobs)
+        {
+            Job->WaitFinish();
+        }
+
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count();
+		std::cout << "render time: " << ms << "ms" << std::endl;
+	}
+
+	// -----------------------------------------------------------------------
 
     void Scene::initBounds() {
         float limit = std::numeric_limits<float>::max();

@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef PLATFORM_LINUX
+
 #include "Threading/ThreadingInterface.h"
 #include "Threading/JobBase.h"
 
@@ -8,13 +10,21 @@
 
 #include "Utils/resourceManager.h"
 
+#ifdef PLATFORM_LINUX
 #include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#endif
+
+#ifdef PLATFORM_WIN64
+#include <Winsock2.h>
+#endif
+#include <stdio.h>
+#include <string.h>
 #include <iomanip>
+
 #define PORT 1337
+
 #if __has_include(<format>)
     #include <format>
     using std::format;
@@ -62,3 +72,5 @@ class TCPWriteJob : public TJobBase {
 	using TCPWriteJob_ptr = std::shared_ptr<TCPWriteJob>;
 
 } // End namespace FalconEye
+
+#endif // End PLATFORM_LINUX

@@ -90,4 +90,10 @@ namespace FalconEye
             resize_window(renderOption->getWidth(), renderOption->getHeight());
         }
     }
+
+// 	void RaycastRenderingApp::StartRender()
+// 	{
+//         sceneRenderer->renderScene(&image, renderingJobs, renderOption);
+// 	}
+
 } // en namespace FalconEye

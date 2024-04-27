@@ -1,11 +1,8 @@
 #pragma once
 
-#include "glcore.h"
+#include <stdint.h>
 
-#define GBUFFER_POSITION_TEXTURE_UNIT 0
-#define GBUFFER_DIFFUSE_TEXTURE_UNIT  1
-#define GBUFFER_NORMAL_TEXTURE_UNIT   2
-#define GBUFFER_TEXCOORD_TEXTURE_UNIT 3
+#include "glcore.h"
 
 namespace FalconEye
 {

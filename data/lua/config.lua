@@ -6,7 +6,7 @@ programConfig = {
         "data/lua/functions.lua",
     },
 
-    mainScript = "realtime.lua",
+    mainScript = "test_lua.lua",
     
     lua_path = "?;?.lua;./data/lua/?;./data/lua/?.lua;./data/lua/generated/?;./data/lua/generated/?.lua",
 

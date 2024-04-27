@@ -217,7 +217,7 @@ namespace FalconEye {
 		bool castRay(const Ray& r, Hit& h) const;
 		bool castRay(const Ray& r) const;
 		Color shade(const Ray& r, const Hit& h, int allowed_child_ray_depth = 0) const;
-		 
+
 		//geometry functions
 		static void createCoordinateSystem(const Vector& N, Vector& Nt, Vector& Nb);
 		static Vector uniformSampleHemisphere(const float &r1, const float &r2); 

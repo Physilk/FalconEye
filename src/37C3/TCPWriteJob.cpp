@@ -1,3 +1,5 @@
+#ifdef PLATFORM_LINUX
+
 #include "37C3/TCPWriteJob.h"
 
 namespace FalconEye
@@ -99,3 +101,5 @@ int TCPWriteJob::VirtualExecute()
 }
 
 } // en Namespace FalconEye
+
+#endif // End PLATFORM_LINUX

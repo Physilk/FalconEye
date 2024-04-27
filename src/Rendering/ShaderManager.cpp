@@ -104,24 +104,24 @@ namespace FalconEye
 		return MakePermutationParameterForShader(std::hash<std::string>{}(Stem.string()), ParamName);
 	}
 
-	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
-	{
-		auto& PermutationCounterShaderType = PermutationCounter[ShaderNameHash];
-		//probably does not work as intended (should be ref)
-		auto PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
-		if (PermutationParameterIterator != PermutationCounterShaderType.end())
-		{
-			return PermutationParameterIterator->second;
-		}
-		else
-		{
-			//probably does not work as intended (should be ref)
-			auto InsertPair = PermutationCounterShaderType.insert({ParamName, ShaderPermutationParameter(ParamName, PermutationCounterShaderType.size())});
-			return InsertPair.first->second;
-		}
-	}
+// 	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
+// 	{
+// 		auto& PermutationCounterShaderType = PermutationCounter[ShaderNameHash];
+// 		//probably does not work as intended (should be ref)
+// 		auto PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
+// 		if (PermutationParameterIterator != PermutationCounterShaderType.end())
+// 		{
+// 			return PermutationParameterIterator->second;
+// 		}
+// 		else
+// 		{
+// 			//probably does not work as intended (should be ref)
+// 			auto InsertPair = PermutationCounterShaderType.insert({ParamName, ShaderPermutationParameter(ParamName, PermutationCounterShaderType.size())});
+// 			return InsertPair.first->second;
+// 		}
+// 	}
 
-	/*ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
+	ShaderPermutationParameter& ShaderPermutationParameter::MakePermutationParameterForShader(Hash ShaderNameHash, const std::string& ParamName)
 	{
 		auto& PermutationCounterShaderType = PermutationCounter[ShaderNameHash];
 		auto& PermutationParameterIterator = PermutationCounterShaderType.find(ParamName);
@@ -134,7 +134,7 @@ namespace FalconEye
 			auto& InsertPair = PermutationCounterShaderType.insert({ParamName, ShaderPermutationParameter(ParamName, PermutationCounterShaderType.size())});
 			return InsertPair.first->second;
 		}
-	}*/
+	}
 
 	Shader::Shader(const std::string& inShaderPath, EShaderType ShaderType, const std::vector<ShaderPermutationParameter>& inPermutationParams, bool bCompile /*= true*/)
 	{

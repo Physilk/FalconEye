@@ -27,12 +27,23 @@
 
 #pragma once
 
+class LuaSelfClass
+{
+	LuaSelfClass() : LuaSelf() {}
 
-template <typename SP, typename T, typename ARGS>
+	void SetSelfRef(LuaRef Other) { LuaSelf = Other; }
+protected:
+	LuaRef LuaSelf;
+};
+
+template<typename T, typename = std::enable_if_t<std::is_base_of<LuaSelfClass, T>::value>>
+using enable_if_LuaSelfClass = T;
+
+template <typename SP, typename T, typename ARGS, bool bIsALuaSelfClass = std::is_base_of<class LuaSelfClass, T>::value>
 struct CppBindClassConstructor;
 
 template <typename T, typename... P>
-struct CppBindClassConstructor <T, T, _arg(*)(P...)>
+struct CppBindClassConstructor <T, T, _arg(*)(P...), false>
 {
     /**
      * lua_CFunction to call a class constructor (constructed inside userdata)
@@ -50,8 +61,29 @@ struct CppBindClassConstructor <T, T, _arg(*)(P...)>
     }
 };
 
+template <typename T, typename... P>
+struct CppBindClassConstructor <T, T, _arg(*)(P...), true>
+{
+    /**
+     * lua_CFunction to call a class constructor (constructed inside userdata)
+     */
+    static int call(lua_State* L)
+    {
+        try {
+            CppArgTuple<P...> args;
+            CppArgTupleInput<P...>::get(L, 2, args);
+            CppObjectValue<T>::pushToStack(L, args, false);
+            LuaRef ObjLuaRef = LuaRef::popFromStack(L);
+            return 1;
+        }
+        catch (std::exception& e) {
+            return luaL_error(L, "%s", e.what());
+        }
+    }
+};
+
 template <typename SP, typename T, typename... P>
-struct CppBindClassConstructor <SP, T, _arg(*)(P...)>
+struct CppBindClassConstructor <SP, T, _arg(*)(P...), false>
 {
     /**
      * lua_CFunction to call a class constructor (stored via shared pointer)
@@ -65,6 +97,28 @@ struct CppBindClassConstructor <SP, T, _arg(*)(P...)>
             CppObjectSharedPtr<SP, T>::pushToStack(L, obj, false);
             return 1;
         } catch (std::exception& e) {
+            return luaL_error(L, "%s", e.what());
+        }
+    }
+};
+
+template <typename SP, typename T, typename... P>
+struct CppBindClassConstructor <SP, T, _arg(*)(P...), true>
+{
+    /**
+     * lua_CFunction to call a class constructor (stored via shared pointer)
+     */
+    static int call(lua_State* L)
+    {
+        try {
+            CppArgTuple<P...> args;
+            CppArgTupleInput<P...>::get(L, 2, args);
+            T* obj = CppInvokeClassConstructor<T>::call(args);
+            CppObjectSharedPtr<SP, T>::pushToStack(L, obj, false);
+            LuaRef ObjLuaRef = LuaRef::popFromStack(L);
+            return 1;
+        }
+        catch (std::exception& e) {
             return luaL_error(L, "%s", e.what());
         }
     }

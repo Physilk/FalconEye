@@ -32,12 +32,15 @@ public:
     SceneRenderOption_ptr getRenderOption() const { return renderOption; }
     void setRenderOption(const SceneRenderOption_ptr& InRenderOption);
 
+    //void StartRender();
+
     LUA_BEGIN_BIND_METHODS(RaycastRenderingApp)
             LUA_BIND_CONSTRUCTOR(const int, const int, _opt<Scene_ptr>, _opt<const int>, _opt<const int>)
             LUA_BIND_METHOD(RaycastRenderingApp, getScene)
             LUA_BIND_METHOD(RaycastRenderingApp, getSceneRenderer)
             LUA_BIND_PROPERTY(RaycastRenderingApp, renderOption, getRenderOption, setRenderOption)
             LUA_BIND_METHOD(RaycastRenderingApp, LuaRun)
+            //LUA_BIND_METHOD(RaycastRenderingApp, StartRender)
             LUA_END_BIND_METHODS
 
 protected:

@@ -43,11 +43,14 @@ solution "gKit2light"
 		linkoptions { "-fopenmp" }
 		defines { "NB_THREADS=16" }
         defines (global_defines)
+        defines ("PLATFORM_LINUX")
 
 	configuration { "windows" }
 		defines { "WIN32", "NVWIDGETS_EXPORTS", "_USE_MATH_DEFINES", "_CRT_SECURE_NO_WARNINGS" }
 		defines { "NOMINMAX" } -- allow std::min() and std::max() in vc++ :(((
+		buildoptions { "/std=c++latest" }
         defines (global_defines)
+		defines ("PLATFORM_WIN64")
 
 	configuration { "windows", "codeblocks", "x32" }
 		includedirs { "extern/mingw/include" }

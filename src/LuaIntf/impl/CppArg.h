@@ -97,7 +97,11 @@ template <typename T>
 struct CppArgTraits
 {
     using Type = T;
+#if _HAS_CXX20
+    using ValueType = typename std::invoke_result<decltype(&LuaType<T>::get)(lua_State*, int), lua_State*, int>::type;
+#else
     using ValueType = typename std::result_of<decltype(&LuaType<T>::get)(lua_State*, int)>::type;
+#endif
     using HolderType = CppArgHolder<ValueType>;
 
     static constexpr bool isInput = true;

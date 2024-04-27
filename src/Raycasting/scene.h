@@ -3,17 +3,20 @@
 
 #include <vector>
 
+#include "LuaIntf/impl/CppBindClass.h"
 #include "LuaInterface/luaObjectInterface.h"
 #include "orbiter.h"
 #include "ray.h"
 #include "SceneObject.h"
 #include "light.h"
 #include "sceneRenderer.h"
+#include "LuaIntf/LuaRef.h"
 
 using std::vector;
 using LuaIntf::_def;
 using SceneRenderOption = FalconEye::SceneRenderer::SceneRenderOption;
 using SceneRenderOption_ptr = FalconEye::SceneRenderer::SceneRenderOption_ptr;
+
 
 namespace FalconEye {
 
@@ -59,6 +62,7 @@ namespace FalconEye {
 
         void preProcess();
         //void renderScene(const char *filename, SceneRenderOption_ptr opt = nullptr);
+        void LuaRenderScene(SceneRenderOption_ptr options);
 
         size_t getCount();
 
@@ -73,6 +77,7 @@ namespace FalconEye {
             LUA_BIND_METHOD(Scene, preProcess)
             //LUA_BIND_METHOD(Scene, renderScene)
             //LUA_BIND_METHOD_ARGS(Scene, renderScene, const char *, _opt<SceneRenderOption_ptr>)
+            LUA_BIND_METHOD_ARGS(Scene, LuaRenderScene, SceneRenderOption_ptr)
             LUA_BIND_PROPERTY(Scene, orbiter, getOrbiter, setOrbiter)
             LUA_END_BIND_METHODS
             

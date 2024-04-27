@@ -53,7 +53,7 @@ local myInvSphere = Objects.make_inverse_sphere{position = myPoint, radius = 100
 
 --the light
 local lightColor = FalconEye.Color(1.00, 1.00, 1.00, 0)
-local lightPos = FalconEye.Point(5, 7, 20)
+local lightPos = FalconEye.Point(5, 7, -10)
 local lightRange = 1000
 local myPointLight = Rendering.make_point_light{ position = lightPos, range = lightRange, color = lightColor} --createPointLigth(lightPos, lightRange, lightColor)
 
@@ -65,10 +65,10 @@ local mySphereLight = Rendering.make_sphere_light{ position = lightPos, range = 
 
 local scene = Rendering.make_scene{
     orbiter = myOrbiter,
-    --objects = {plan1, plan2, plan3, plan4, plan5, mySphere, myInvSphere},
-    objects = {mySphere, plan1, plan3},
-    --lights = {mySphereLight}
-    lights = {directionalLight}
+    objects = {plan1, plan2, plan3, plan4, plan5, mySphere, myInvSphere},
+    --objects = {mySphere, plan1, plan3},
+    lights = {mySphereLight}
+    --lights = {directionalLight}
 }
 scene:preProcess();
 
@@ -78,13 +78,15 @@ local mat_tile_light = Mat.make_material{albedo = FalconEye.Color(0.8, 0.8, 0.8,
 --createChessBoard(myScene, 5, 5, 5, mat_tile_dark, mat_tile_light);
 
 --Mat.debug_print()
+lightPos = FalconEye.Point(lightPos.x, lightPos.y, lightPos.z + 0.5 * 20)
+mySphereLight.position = lightPos
 local sceneRenderOption = Rendering.make_scene_render_options{width = 800, height = 600, fov = 60, reflection_bounce = 2, sample_per_pixels = 1, output_file = "output/test_plan.png"}
---for i=0, 5, 1 do
+for i=21, 40, 1 do
 	--render the scene
     --myOrbiter:rotation(i, 0)
 	--myScene.orbiter = myOrbiter
-    ----lightPos = FalconEye.Point(lightPos.x, lightPos.y, lightPos.z + 5)
-    ----myPointLight.position = lightPos
+    lightPos = FalconEye.Point(lightPos.x, lightPos.y, lightPos.z + 0.5)
+    mySphereLight.position = lightPos
     --local p = mySphere.center
     --p.y = p.y + 1
     --mySphere.center = p
@@ -92,15 +94,16 @@ local sceneRenderOption = Rendering.make_scene_render_options{width = 800, heigh
     --mySphere.radius = radius
 	--myScene:renderScene("output/plan/test_plan".. i .. ".png", sceneRenderOption)
 --myScene:renderScene("output/plan/mini_test_plan.png", sceneRenderOption)
---scene:renderScene("output/plan/mini_test_plan.png", sceneRenderOption)
---end
+    sceneRenderOption.outputFilename = "output/plan/test_plan".. i .. ".png"
+    scene:LuaRenderScene(sceneRenderOption)
+end
 
-print_table(getmetatable(plan2))
+--print_table(getmetatable(plan2))
 
 
 -- App
-local renderingApp = FalconEye.RayCasting.RaycastRenderingApp(900, 600, scene, 3, 3)
-renderingApp.renderOption = sceneRenderOption
-renderingApp:LuaRun()
+--local renderingApp = FalconEye.RayCasting.RaycastRenderingApp(900, 600, scene, 3, 3)
+--renderingApp.renderOption = sceneRenderOption
+--renderingApp:LuaRun()
 --renderingApp:DebugRender()
 --pauseUntilEnter()
